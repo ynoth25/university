@@ -1,0 +1,450 @@
+{
+	"info": {
+		"_postman_id": "document-request-api-collection",
+		"name": "Document Request API",
+		"description": "Complete API collection for Document Request management system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Document Requests",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/document-requests?per_page=15&page=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"document-requests"
+					],
+					"query": [
+						{
+							"key": "per_page",
+							"value": "15",
+							"description": "Number of items per page"
+						},
+						{
+							"key": "page",
+							"value": "1",
+							"description": "Page number"
+						},
+						{
+							"key": "status",
+							"value": "",
+							"description": "Filter by status (pending, processing, completed, rejected)",
+							"disabled": true
+						},
+						{
+							"key": "request_type",
+							"value": "",
+							"description": "Filter by document type (SF10, ENROLLMENT_CERT, DIPLOMA, etc.)",
+							"disabled": true
+						},
+						{
+							"key": "search",
+							"value": "",
+							"description": "Search by student name, LRN, or request ID",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Retrieve all document requests with optional filtering and pagination"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Document Requests by Status",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/document-requests?status=pending",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"document-requests"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "pending",
+							"description": "Filter by status"
+						}
+					]
+				},
+				"description": "Get document requests filtered by status (pending, processing, completed, rejected)"
+			},
+			"response": []
+		},
+		{
+			"name": "Search Document Requests",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/document-requests?search=John",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"document-requests"
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": "John",
+							"description": "Search term"
+						}
+					]
+				},
+				"description": "Search document requests by student name, LRN, or request ID"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Document Request by ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/document-requests/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"document-requests",
+						"1"
+					]
+				},
+				"description": "Get a specific document request by its database ID"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Document Request by Request ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/document-requests/request/DOC-2025-KQ2NIRUW",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"document-requests",
+						"request",
+						"DOC-2025-KQ2NIRUW"
+					]
+				},
+				"description": "Get a specific document request by its unique request ID"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Document Request",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"learning_reference_number\": \"123456789\",\n    \"name_of_student\": \"John Doe\",\n    \"last_schoolyear_attended\": \"2023-2024\",\n    \"gender\": \"male\",\n    \"grade\": \"12\",\n    \"section\": \"A\",\n    \"major\": \"STEM\",\n    \"adviser\": \"Mrs. Smith\",\n    \"contact_number\": \"09123456789\",\n    \"person_requesting\": {\n        \"name\": \"John Doe\",\n        \"request_for\": \"SF10\",\n        \"signature\": \"https://example.com/signature.jpg\"\n    }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/document-requests",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"document-requests"
+					]
+				},
+				"description": "Create a new document request"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Document Request",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"learning_reference_number\": \"123456789\",\n    \"name_of_student\": \"John Doe Updated\",\n    \"last_schoolyear_attended\": \"2023-2024\",\n    \"gender\": \"male\",\n    \"grade\": \"12\",\n    \"section\": \"A\",\n    \"major\": \"STEM\",\n    \"adviser\": \"Mrs. Smith\",\n    \"contact_number\": \"09123456789\",\n    \"person_requesting\": {\n        \"name\": \"John Doe Updated\",\n        \"request_for\": \"SF10\",\n        \"signature\": \"https://example.com/signature.jpg\"\n    }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/document-requests/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"document-requests",
+						"1"
+					]
+				},
+				"description": "Update an existing document request"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Document Request Status",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"status\": \"processing\",\n    \"remarks\": \"Document is being processed\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/document-requests/1/status",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"document-requests",
+						"1",
+						"status"
+					]
+				},
+				"description": "Update the status of a document request"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Document Request",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/document-requests/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"document-requests",
+						"1"
+					]
+				},
+				"description": "Delete a document request"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Statistics",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/document-requests/statistics",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"document-requests",
+						"statistics"
+					]
+				},
+				"description": "Get statistics about document requests"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "api_key",
+			"value": "sk-XGTxHyURlz29eiedRWsdrw6Fwez3CRnC",
+			"type": "string"
+		}
+	]
+} 
