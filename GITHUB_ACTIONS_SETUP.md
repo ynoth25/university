@@ -14,19 +14,7 @@ Go to your GitHub repository → Settings → Secrets and variables → Actions,
 
 ### Required Secrets
 
-#### Database Configuration (RDS)
-```
-DB_CONNECTION=mysql
-DB_HOST=your-rds-endpoint.region.rds.amazonaws.com
-DB_PORT=3306
-DB_DATABASE=your_database_name
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-MYSQL_ATTR_SSL_CA=/path/to/rds-ca-2019-root.pem
-MYSQL_ATTR_SSL_VERIFY_SERVER_CERT=false
-```
-
-#### AWS Configuration
+#### AWS Configuration (for S3 and deployment)
 ```
 AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
@@ -51,7 +39,7 @@ AWS_CLOUDFRONT_ID=your-production-cloudfront-id
 
 ### Option A: Full CI/CD Pipeline (Recommended)
 Use `laravel-ci-cd.yml` for a complete pipeline with:
-- Testing against RDS database
+- Testing with local MySQL container
 - Code quality checks (PHP CodeSniffer, PHPStan)
 - Security scanning (Enlightn)
 - Build optimization
@@ -68,17 +56,20 @@ The workflows are configured to run on:
 
 ## Step 4: Database Setup for CI/CD
 
-### Important Notes:
-1. **RDS Security Group**: Ensure your RDS security group allows connections from GitHub Actions IP ranges
-2. **Database User**: Create a dedicated database user for CI/CD with appropriate permissions
-3. **SSL Configuration**: The workflow includes SSL configuration for secure RDS connections
-4. **Test Database**: Consider using a separate test database to avoid affecting development data
+### Local MySQL Container
+The workflow uses a local MySQL 8.0 container for testing:
+- **Automatically created** by GitHub Actions
+- **Fresh database** for each workflow run
+- **Automatically disposed** after tests complete
+- **No external dependencies** or network latency
+- **Fast and reliable** testing environment
 
-### RDS Security Group Configuration:
-```bash
-# Add GitHub Actions IP ranges to your RDS security group
-# You can find current IP ranges at: https://api.github.com/meta
-```
+### Benefits:
+1. **Isolated Testing**: Each workflow run gets a clean database
+2. **No Network Issues**: No external database connectivity problems
+3. **Fast Execution**: No network latency to external databases
+4. **Cost Effective**: No additional AWS charges for database usage
+5. **Consistent Environment**: Same MySQL version and configuration every time
 
 ## Step 5: Test Your Setup
 
@@ -97,7 +88,7 @@ The workflows are configured to run on:
 ### Troubleshooting:
 - Check workflow logs for detailed error messages
 - Verify all secrets are correctly configured
-- Ensure RDS connectivity from GitHub Actions
+- Ensure AWS credentials have proper permissions
 - Review AWS IAM permissions
 
 ## Security Best Practices
@@ -106,14 +97,14 @@ The workflows are configured to run on:
 2. **Least Privilege**: Use IAM roles with minimal required permissions
 3. **Secret Management**: Never commit secrets to your repository
 4. **Network Security**: Use VPC and security groups to restrict access
-5. **SSL/TLS**: Always use SSL connections to RDS
+5. **Container Security**: GitHub Actions containers are isolated and secure
 
 ## Cost Optimization
 
 1. **Workflow Optimization**: Use caching for dependencies
 2. **AWS Resources**: Monitor and optimize AWS resource usage
 3. **Build Artifacts**: Clean up old artifacts regularly
-4. **Database**: Use appropriate RDS instance sizes for testing
+4. **Database**: No additional database costs (uses local container)
 
 ## Next Steps
 
