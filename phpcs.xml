@@ -1,24 +1,30 @@
 <?xml version="1.0"?>
-<ruleset name="Laravel">
-    <description>Laravel Coding Standards</description>
-    
-    <file>app/</file>
-    <file>tests/</file>
-    
+<ruleset name="PSR12 Laravel">
+    <description>PSR-12 coding standard with Laravel test exceptions</description>
+
+    <!-- Include PSR-12 standard -->
     <rule ref="PSR12"/>
-    
-    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
-    
+
+    <!-- Exclude test method naming rule for Laravel convention -->
+    <rule ref="PSR1.Methods.CamelCapsMethodName">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
+    <!-- Set line length limit -->
     <rule ref="Generic.Files.LineLength">
         <properties>
             <property name="lineLimit" value="120"/>
             <property name="absoluteLineLimit" value="150"/>
         </properties>
     </rule>
-    
-    <rule ref="Squiz.WhiteSpace.FunctionSpacing">
-        <properties>
-            <property name="spacing" value="1"/>
-        </properties>
-    </rule>
+
+    <!-- Files to check -->
+    <file>app/</file>
+    <file>tests/</file>
+
+    <!-- Exclude vendor and other directories -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/storage/*</exclude-pattern>
+    <exclude-pattern>*/bootstrap/cache/*</exclude-pattern>
 </ruleset>

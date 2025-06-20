@@ -42,7 +42,10 @@ class FileUploadService
         ],
         'other' => [
             'max_size' => 10 * 1024 * 1024, // 10MB
-            'allowed_mimes' => ['application/pdf', 'image/jpeg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+            'allowed_mimes' => [
+                'application/pdf', 'image/jpeg', 'image/png', 'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ],
             'folder' => 'supporting_documents'
         ]
     ];

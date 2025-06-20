@@ -35,7 +35,8 @@ class DocumentRequestRequest extends FormRequest
             // Person requesting validation
             'person_requesting' => 'required|array',
             'person_requesting.name' => 'required|string|max:255',
-            'person_requesting.request_for' => 'required|in:SF10,ENROLLMENT_CERT,DIPLOMA,CAV,ENG. INST.,CERT OF GRAD,OTHERS',
+            'person_requesting.request_for' => 'required|in:SF10,ENROLLMENT_CERT,DIPLOMA,CAV,' .
+                'ENG. INST.,CERT OF GRAD,OTHERS',
             'person_requesting.signature' => 'required|url|max:500',
         ];
     }
@@ -58,7 +59,8 @@ class DocumentRequestRequest extends FormRequest
             'person_requesting.required' => 'Person requesting information is required.',
             'person_requesting.name.required' => 'Person requesting name is required.',
             'person_requesting.request_for.required' => 'Document type is required.',
-            'person_requesting.request_for.in' => 'Document type must be one of: SF10, ENROLLMENT_CERT, DIPLOMA, CAV, ENG. INST., CERT OF GRAD, OTHERS.',
+            'person_requesting.request_for.in' => 'Document type must be one of: SF10, ENROLLMENT_CERT, ' .
+                'DIPLOMA, CAV, ENG. INST., CERT OF GRAD, OTHERS.',
             'person_requesting.signature.required' => 'Signature URL is required.',
             'person_requesting.signature.url' => 'Signature must be a valid URL.',
         ];
