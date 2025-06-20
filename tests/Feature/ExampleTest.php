@@ -20,9 +20,9 @@ class ExampleTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->baseController = new BaseController();
-        
+
         $this->user = User::factory()->create();
         $this->apiKey = ApiKey::factory()->create([
             'key' => 'test-api-key-12345',
@@ -34,12 +34,12 @@ class ExampleTest extends TestCase
     {
         $data = ['test' => 'data'];
         $message = 'Test message';
-        
+
         $response = $this->baseController->sendResponse($data, $message);
-        
+
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        
+
         $responseData = json_decode($response->getContent(), true);
         $this->assertTrue($responseData['success']);
         $this->assertEquals($message, $responseData['message']);
@@ -51,12 +51,12 @@ class ExampleTest extends TestCase
         $message = 'Error message';
         $errors = ['field' => 'error'];
         $code = 422;
-        
+
         $response = $this->baseController->sendError($message, $errors, $code);
-        
+
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals($code, $response->getStatusCode());
-        
+
         $responseData = json_decode($response->getContent(), true);
         $this->assertFalse($responseData['success']);
         $this->assertEquals($message, $responseData['message']);
@@ -67,12 +67,12 @@ class ExampleTest extends TestCase
     {
         $data = ['id' => 1, 'name' => 'test'];
         $message = 'Created successfully';
-        
+
         $response = $this->baseController->sendCreated($data, $message);
-        
+
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
-        
+
         $responseData = json_decode($response->getContent(), true);
         $this->assertTrue($responseData['success']);
         $this->assertEquals($message, $responseData['message']);
@@ -83,12 +83,12 @@ class ExampleTest extends TestCase
     {
         $data = ['id' => 1, 'name' => 'updated'];
         $message = 'Updated successfully';
-        
+
         $response = $this->baseController->sendUpdated($data, $message);
-        
+
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        
+
         $responseData = json_decode($response->getContent(), true);
         $this->assertTrue($responseData['success']);
         $this->assertEquals($message, $responseData['message']);
@@ -98,12 +98,12 @@ class ExampleTest extends TestCase
     public function test_base_controller_send_deleted()
     {
         $message = 'Deleted successfully';
-        
+
         $response = $this->baseController->sendDeleted($message);
-        
+
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(204, $response->getStatusCode());
-        
+
         $responseData = json_decode($response->getContent(), true);
         $this->assertTrue($responseData['success']);
         $this->assertEquals($message, $responseData['message']);
@@ -199,7 +199,7 @@ class ExampleTest extends TestCase
             'success',
             'message',
         ]);
-        
+
         $this->assertFalse($response->json('success'));
     }
 
@@ -219,7 +219,7 @@ class ExampleTest extends TestCase
         ])->get('/api/v1/document-requests?page=1&per_page=10');
 
         $response->assertStatus(200);
-        
+
         $this->assertCount(10, $response['data']);
     }
 
@@ -241,7 +241,7 @@ class ExampleTest extends TestCase
         ])->get('/api/v1/document-requests?status=pending');
 
         $response->assertStatus(200);
-        
+
         $this->assertCount(1, $response['data']);
         $this->assertEquals('pending', $response['data'][0]['status']);
     }
@@ -262,7 +262,7 @@ class ExampleTest extends TestCase
         ])->get('/api/v1/document-requests?search=John');
 
         $response->assertStatus(200);
-        
+
         $this->assertCount(1, $response['data']);
         $this->assertEquals('John Doe', $response['data'][0]['name_of_student']);
     }
@@ -275,7 +275,7 @@ class ExampleTest extends TestCase
         ])->postJson('/api/v1/document-requests', []);
 
         $response->assertStatus(422);
-        
+
         // Laravel validation errors don't have a 'success' key
         $this->assertArrayHasKey('errors', $response->json());
     }

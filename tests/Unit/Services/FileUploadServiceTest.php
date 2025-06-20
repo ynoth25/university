@@ -224,4 +224,4 @@ class FileUploadServiceTest extends TestCase
         $this->assertFalse(Storage::disk('s3')->exists('old/file.pdf'));
         $this->assertTrue(Storage::disk('s3')->exists($updatedFile->file_name));
     }
-} 
+}

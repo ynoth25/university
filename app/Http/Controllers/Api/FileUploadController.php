@@ -402,7 +402,7 @@ class FileUploadController extends BaseController
             foreach ($allowedTypes as $fileType) {
                 $config = FileUploadService::getFileTypeConfig($fileType);
                 $maxFileSize = max($maxFileSize, $config['max_size']);
-                
+
                 // Extract extensions from MIME types
                 foreach ($config['allowed_mimes'] as $mimeType) {
                     $extension = $this->getExtensionFromMimeType($mimeType);

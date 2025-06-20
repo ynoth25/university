@@ -200,13 +200,34 @@ class DocumentRequestController extends BaseController
                 'completed' => DocumentRequest::completed()->count(),
                 'rejected' => DocumentRequest::rejected()->count(),
                 'by_type' => [
-                    'SF10' => DocumentRequest::whereJsonContains('person_requesting->request_for', 'SF10')->count(),
-                    'ENROLLMENT_CERT' => DocumentRequest::whereJsonContains('person_requesting->request_for', 'ENROLLMENT_CERT')->count(),
-                    'DIPLOMA' => DocumentRequest::whereJsonContains('person_requesting->request_for', 'DIPLOMA')->count(),
-                    'CAV' => DocumentRequest::whereJsonContains('person_requesting->request_for', 'CAV')->count(),
-                    'ENG. INST.' => DocumentRequest::whereJsonContains('person_requesting->request_for', 'ENG. INST.')->count(),
-                    'CERT OF GRAD' => DocumentRequest::whereJsonContains('person_requesting->request_for', 'CERT OF GRAD')->count(),
-                    'OTHERS' => DocumentRequest::whereJsonContains('person_requesting->request_for', 'OTHERS')->count(),
+                    'SF10' => DocumentRequest::whereJsonContains(
+                        'person_requesting->request_for',
+                        'SF10'
+                    )->count(),
+                    'ENROLLMENT_CERT' => DocumentRequest::whereJsonContains(
+                        'person_requesting->request_for',
+                        'ENROLLMENT_CERT'
+                    )->count(),
+                    'DIPLOMA' => DocumentRequest::whereJsonContains(
+                        'person_requesting->request_for',
+                        'DIPLOMA'
+                    )->count(),
+                    'CAV' => DocumentRequest::whereJsonContains(
+                        'person_requesting->request_for',
+                        'CAV'
+                    )->count(),
+                    'ENG. INST.' => DocumentRequest::whereJsonContains(
+                        'person_requesting->request_for',
+                        'ENG. INST.'
+                    )->count(),
+                    'CERT OF GRAD' => DocumentRequest::whereJsonContains(
+                        'person_requesting->request_for',
+                        'CERT OF GRAD'
+                    )->count(),
+                    'OTHERS' => DocumentRequest::whereJsonContains(
+                        'person_requesting->request_for',
+                        'OTHERS'
+                    )->count(),
                 ],
             ];
 

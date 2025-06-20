@@ -16,7 +16,7 @@ class ExampleTest extends TestCase
     public function test_user_model_basic_attributes()
     {
         $user = User::factory()->create();
-        
+
         $this->assertNotEmpty($user->name);
         $this->assertNotEmpty($user->email);
         $this->assertStringContainsString('@', $user->email);
@@ -92,11 +92,11 @@ class ExampleTest extends TestCase
             'request_for' => 'TRANSCRIPT',
             'signature' => 'https://example.com/signature.jpg'
         ];
-        
+
         $documentRequest = DocumentRequest::factory()->create([
             'person_requesting' => $personRequesting
         ]);
-        
+
         $this->assertEquals($personRequesting, $documentRequest->person_requesting);
         $this->assertIsArray($documentRequest->person_requesting);
         $this->assertEquals('John Doe', $documentRequest->person_requesting_name);
@@ -106,35 +106,35 @@ class ExampleTest extends TestCase
     public function test_document_request_signature_url()
     {
         $documentRequest = DocumentRequest::factory()->create();
-        
+
         // No signature file exists
         $this->assertEquals('', $documentRequest->signature_url);
-        
+
         // Create a signature file
         $signatureFile = DocumentFile::factory()->create([
             'document_request_id' => $documentRequest->id,
             'file_type' => 'signature',
             'file_path' => 'signatures/test.jpg'
         ]);
-        
+
         $this->assertEquals($signatureFile->url, $documentRequest->signature_url);
     }
 
     public function test_document_request_file_methods()
     {
         $documentRequest = DocumentRequest::factory()->create();
-        
+
         // Create different types of files
         $signatureFile = DocumentFile::factory()->create([
             'document_request_id' => $documentRequest->id,
             'file_type' => 'signature'
         ]);
-        
+
         $documentFile = DocumentFile::factory()->create([
             'document_request_id' => $documentRequest->id,
             'file_type' => 'transcript_of_records'
         ]);
-        
+
         $this->assertEquals($signatureFile->id, $documentRequest->signatureFile()->id);
         $this->assertEquals(1, $documentRequest->supportingDocuments()->count());
         $this->assertEquals($documentFile->id, $documentRequest->getDocumentByType('transcript_of_records')->id);
@@ -143,7 +143,7 @@ class ExampleTest extends TestCase
     public function test_api_key_factory()
     {
         $apiKey = ApiKey::factory()->create();
-        
+
         $this->assertNotEmpty($apiKey->key);
         $this->assertIsBool($apiKey->is_active);
         $this->assertTrue($apiKey->is_active); // Default should be true
@@ -152,7 +152,7 @@ class ExampleTest extends TestCase
     public function test_document_request_factory()
     {
         $documentRequest = DocumentRequest::factory()->create();
-        
+
         $this->assertNotEmpty($documentRequest->learning_reference_number);
         $this->assertNotEmpty($documentRequest->name_of_student);
         $this->assertNotEmpty($documentRequest->status);
@@ -162,7 +162,7 @@ class ExampleTest extends TestCase
     public function test_document_file_factory()
     {
         $documentFile = DocumentFile::factory()->create();
-        
+
         $this->assertNotEmpty($documentFile->file_name);
         $this->assertNotEmpty($documentFile->file_type);
         $this->assertIsInt($documentFile->file_size);

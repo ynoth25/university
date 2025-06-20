@@ -141,4 +141,4 @@ class ApiKeyTest extends TestCase
         $this->assertEquals(35, strlen($key1));
         $this->assertEquals(35, strlen($key2));
     }
-} 
+}

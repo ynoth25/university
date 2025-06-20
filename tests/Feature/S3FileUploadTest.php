@@ -23,16 +23,16 @@ class S3FileUploadTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create test user
         $this->user = User::factory()->create();
-        
+
         // Create API key (without user_id since it's not in the schema)
         $this->apiKey = ApiKey::factory()->create([
             'key' => 'test-api-key-12345',
             'is_active' => true,
         ]);
-        
+
         // Create document request using only fields that exist in the migration
         $this->documentRequest = DocumentRequest::factory()->create([
             'learning_reference_number' => '1234567890',
@@ -416,16 +416,16 @@ class S3FileUploadTest extends TestCase
     public function test_file_upload_service_integration()
     {
         $file = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
-        
+
         $fileUploadService = app(FileUploadService::class);
-        
+
         // Test file validation
         $validationErrors = $fileUploadService->validateFile($file, 'transcript_of_records');
         $this->assertEmpty($validationErrors);
-        
+
         // Test file upload
         $documentFile = $fileUploadService->uploadFile($file, $this->documentRequest, 'transcript_of_records');
-        
+
         $this->assertInstanceOf(DocumentFile::class, $documentFile);
         $this->assertEquals('transcript_of_records', $documentFile->file_type);
         $this->assertEquals('document.pdf', $documentFile->original_name);
@@ -434,9 +434,9 @@ class S3FileUploadTest extends TestCase
     public function test_file_upload_service_validation_errors()
     {
         $file = UploadedFile::fake()->create('document.txt', 1024, 'text/plain');
-        
+
         $fileUploadService = app(FileUploadService::class);
-        
+
         // Test file validation with invalid file type
         $validationErrors = $fileUploadService->validateFile($file, 'transcript_of_records');
         $this->assertNotEmpty($validationErrors);

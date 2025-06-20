@@ -237,7 +237,8 @@ class FileUploadService
         }
 
         if (!in_array($file->getMimeType(), $config['allowed_mimes'])) {
-            $errors[] = "File type not allowed. Allowed types: " . implode(', ', $config['allowed_mimes']);
+            $errors[] = "File type not allowed. Allowed types: " .
+                implode(', ', $config['allowed_mimes']);
         }
 
         return $errors;

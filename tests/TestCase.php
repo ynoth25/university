@@ -30,8 +30,11 @@ abstract class TestCase extends BaseTestCase
     /**
      * Helper method to make authenticated API requests
      */
-    protected function authenticatedRequest(string $method, string $uri, array $data = []): \Illuminate\Testing\TestResponse
-    {
+    protected function authenticatedRequest(
+        string $method,
+        string $uri,
+        array $data = []
+    ): \Illuminate\Testing\TestResponse {
         return $this->withHeaders([
             'X-API-Key' => $this->getTestApiKey()->key,
             'Accept' => 'application/json',

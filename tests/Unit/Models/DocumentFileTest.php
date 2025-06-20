@@ -190,7 +190,7 @@ class DocumentFileTest extends TestCase
     public function test_fillable_fields_are_settable()
     {
         $documentRequest = DocumentRequest::factory()->create();
-        
+
         $data = [
             'document_request_id' => $documentRequest->id,
             'file_type' => 'transcript_of_records',
@@ -212,4 +212,4 @@ class DocumentFileTest extends TestCase
             }
         }
     }
-} 
+}
