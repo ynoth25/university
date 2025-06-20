@@ -63,7 +63,7 @@ class S3FileUploadTest extends TestCase
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
             'Content-Type' => 'multipart/form-data',
-        ])->post("/api/document-requests/{$this->documentRequest->id}/files", [
+        ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload", [
             'file' => $file,
             'file_type' => 'document',
         ]);
@@ -102,7 +102,7 @@ class S3FileUploadTest extends TestCase
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
             'Content-Type' => 'multipart/form-data',
-        ])->post("/api/document-requests/{$this->documentRequest->id}/files/multiple", [
+        ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload-multiple", [
             'files' => $files,
             'file_type' => 'document',
         ]);
@@ -131,7 +131,7 @@ class S3FileUploadTest extends TestCase
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get("/api/document-requests/{$this->documentRequest->id}/files");
+        ])->get("/api/v1/document-requests/{$this->documentRequest->id}/files");
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -161,7 +161,7 @@ class S3FileUploadTest extends TestCase
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get("/api/document-requests/{$this->documentRequest->id}/files/type/document");
+        ])->get("/api/v1/document-requests/{$this->documentRequest->id}/files/type/document");
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -187,7 +187,7 @@ class S3FileUploadTest extends TestCase
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->delete("/api/document-requests/{$this->documentRequest->id}/files/{$file->id}");
+        ])->delete("/api/v1/document-requests/{$this->documentRequest->id}/files/{$file->id}");
 
         $response->assertStatus(200)
             ->assertJson([
@@ -207,7 +207,7 @@ class S3FileUploadTest extends TestCase
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->put("/api/document-requests/{$this->documentRequest->id}/files/{$file->id}", [
+        ])->put("/api/v1/document-requests/{$this->documentRequest->id}/files/{$file->id}", [
             'metadata' => [
                 'description' => 'Updated description',
                 'tags' => ['important', 'urgent'],
@@ -241,7 +241,7 @@ class S3FileUploadTest extends TestCase
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get("/api/document-requests/{$this->documentRequest->id}/files/{$file->id}/info");
+        ])->get("/api/v1/document-requests/{$this->documentRequest->id}/files/{$file->id}");
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -266,7 +266,7 @@ class S3FileUploadTest extends TestCase
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get("/api/document-requests/files/allowed-types");
+        ])->get("/api/v1/file-types");
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -287,7 +287,7 @@ class S3FileUploadTest extends TestCase
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
             'Content-Type' => 'multipart/form-data',
-        ])->post("/api/document-requests/{$this->documentRequest->id}/files", [
+        ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload", [
             'file' => $file,
             'file_type' => 'invalid_type',
         ]);
@@ -300,7 +300,7 @@ class S3FileUploadTest extends TestCase
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
             'Content-Type' => 'multipart/form-data',
-        ])->post("/api/document-requests/{$this->documentRequest->id}/files", [
+        ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload", [
             'file_type' => 'document',
         ]);
 
@@ -314,7 +314,7 @@ class S3FileUploadTest extends TestCase
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
             'Content-Type' => 'multipart/form-data',
-        ])->post("/api/document-requests/99999/files", [
+        ])->post("/api/v1/document-requests/99999/files/upload", [
             'file' => $file,
             'file_type' => 'document',
         ]);
@@ -326,7 +326,7 @@ class S3FileUploadTest extends TestCase
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->delete("/api/document-requests/{$this->documentRequest->id}/files/99999");
+        ])->delete("/api/v1/document-requests/{$this->documentRequest->id}/files/99999");
 
         $response->assertStatus(404);
     }
@@ -335,7 +335,7 @@ class S3FileUploadTest extends TestCase
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get("/api/document-requests/99999/files");
+        ])->get("/api/v1/document-requests/99999/files");
 
         $response->assertStatus(404);
     }
@@ -344,7 +344,7 @@ class S3FileUploadTest extends TestCase
     {
         $file = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
 
-        $response = $this->post("/api/document-requests/{$this->documentRequest->id}/files", [
+        $response = $this->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload", [
             'file' => $file,
             'file_type' => 'document',
         ]);
@@ -359,7 +359,7 @@ class S3FileUploadTest extends TestCase
         $response = $this->withHeaders([
             'X-API-Key' => 'invalid-key',
             'Content-Type' => 'multipart/form-data',
-        ])->post("/api/document-requests/{$this->documentRequest->id}/files", [
+        ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload", [
             'file' => $file,
             'file_type' => 'document',
         ]);
@@ -378,7 +378,7 @@ class S3FileUploadTest extends TestCase
         $response = $this->withHeaders([
             'X-API-Key' => $inactiveKey->key,
             'Content-Type' => 'multipart/form-data',
-        ])->post("/api/document-requests/{$this->documentRequest->id}/files", [
+        ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload", [
             'file' => $file,
             'file_type' => 'document',
         ]);
@@ -395,7 +395,7 @@ class S3FileUploadTest extends TestCase
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
             'Content-Type' => 'multipart/form-data',
-        ])->post("/api/document-requests/{$this->documentRequest->id}/files/multiple", [
+        ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload-multiple", [
             'files' => [$validFile, $invalidFile],
             'file_type' => 'document',
         ]);

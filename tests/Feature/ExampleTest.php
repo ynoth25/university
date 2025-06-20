@@ -92,14 +92,14 @@ class ApiBaseTest extends TestCase
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get('/api/document-requests');
+        ])->get('/api/v1/document-requests');
 
         $response->assertStatus(200);
     }
 
     public function test_api_key_middleware_missing_key()
     {
-        $response = $this->get('/api/document-requests');
+        $response = $this->get('/api/v1/document-requests');
 
         $response->assertStatus(401);
     }
@@ -108,7 +108,7 @@ class ApiBaseTest extends TestCase
     {
         $response = $this->withHeaders([
             'X-API-Key' => 'invalid-key',
-        ])->get('/api/document-requests');
+        ])->get('/api/v1/document-requests');
 
         $response->assertStatus(401);
     }
@@ -121,7 +121,7 @@ class ApiBaseTest extends TestCase
 
         $response = $this->withHeaders([
             'X-API-Key' => $inactiveKey->key,
-        ])->get('/api/document-requests');
+        ])->get('/api/v1/document-requests');
 
         $response->assertStatus(401);
     }
@@ -129,9 +129,9 @@ class ApiBaseTest extends TestCase
     public function test_api_routes_require_api_key()
     {
         $routes = [
-            '/api/document-requests',
-            '/api/document-requests/1',
-            '/api/document-requests/1/files',
+            '/api/v1/document-requests',
+            '/api/v1/document-requests/1',
+            '/api/v1/document-requests/1/files',
         ];
 
         foreach ($routes as $route) {
@@ -144,7 +144,7 @@ class ApiBaseTest extends TestCase
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get('/api/document-requests');
+        ])->get('/api/v1/document-requests');
 
         $response->assertStatus(200);
     }
@@ -153,7 +153,7 @@ class ApiBaseTest extends TestCase
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get('/api/document-requests');
+        ])->get('/api/v1/document-requests');
 
         $response->assertJsonStructure([
             'success',
@@ -170,7 +170,7 @@ class ApiBaseTest extends TestCase
 
     public function test_api_error_response_structure()
     {
-        $response = $this->get('/api/document-requests');
+        $response = $this->get('/api/v1/document-requests');
 
         $response->assertJsonStructure([
             'success',
@@ -194,7 +194,7 @@ class ApiBaseTest extends TestCase
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get('/api/document-requests?page=1&per_page=10');
+        ])->get('/api/v1/document-requests?page=1&per_page=10');
 
         $response->assertStatus(200);
         
@@ -220,7 +220,7 @@ class ApiBaseTest extends TestCase
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get('/api/document-requests?status=pending');
+        ])->get('/api/v1/document-requests?status=pending');
 
         $response->assertStatus(200);
         
@@ -242,7 +242,7 @@ class ApiBaseTest extends TestCase
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get('/api/document-requests?search=John');
+        ])->get('/api/v1/document-requests?search=John');
 
         $response->assertStatus(200);
         
@@ -266,7 +266,7 @@ class ApiBaseTest extends TestCase
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get('/api/document-requests?sort=name_of_student&order=desc');
+        ])->get('/api/v1/document-requests?sort=name_of_student&order=desc');
 
         $response->assertStatus(200);
         
@@ -279,7 +279,7 @@ class ApiBaseTest extends TestCase
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
             'Content-Type' => 'application/json',
-        ])->postJson('/api/document-requests', []);
+        ])->postJson('/api/v1/document-requests', []);
 
         $response->assertStatus(422);
         
@@ -292,7 +292,7 @@ class ApiBaseTest extends TestCase
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get('/api/document-requests/99999');
+        ])->get('/api/v1/document-requests/99999');
 
         $response->assertStatus(404);
         
@@ -305,7 +305,7 @@ class ApiBaseTest extends TestCase
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->patch('/api/document-requests/1');
+        ])->patch('/api/v1/document-requests/1');
 
         $response->assertStatus(405);
     }
@@ -315,7 +315,7 @@ class ApiBaseTest extends TestCase
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
             'Accept' => 'application/json',
-        ])->get('/api/document-requests');
+        ])->get('/api/v1/document-requests');
 
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/json');
