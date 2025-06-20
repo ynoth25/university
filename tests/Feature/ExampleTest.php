@@ -180,11 +180,13 @@ class ExampleTest extends TestCase
             'success',
             'message',
             'data' => [
-                'document_requests',
-                'total',
-                'per_page',
+                'data',
                 'current_page',
+                'per_page',
+                'total',
                 'last_page',
+                'from',
+                'to',
             ]
         ]);
     }
@@ -219,7 +221,7 @@ class ExampleTest extends TestCase
         $response->assertStatus(200);
         
         $data = $response->json('data');
-        $this->assertEquals(10, count($data['document_requests']));
+        $this->assertEquals(10, count($data['data']));
         $this->assertEquals(15, $data['total']);
         $this->assertEquals(1, $data['current_page']);
         $this->assertEquals(2, $data['last_page']);
@@ -246,7 +248,7 @@ class ExampleTest extends TestCase
         
         $data = $response->json('data');
         $this->assertEquals(1, $data['total']);
-        $this->assertEquals('pending', $data['document_requests'][0]['status']);
+        $this->assertEquals('pending', $data['data'][0]['status']);
     }
 
     public function test_api_searching()
@@ -268,14 +270,15 @@ class ExampleTest extends TestCase
         
         $data = $response->json('data');
         $this->assertEquals(1, $data['total']);
-        $this->assertEquals('John Doe', $data['document_requests'][0]['name_of_student']);
+        $this->assertEquals('John Doe', $data['data'][0]['name_of_student']);
     }
 
     public function test_api_validation_errors()
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->post('/api/v1/document-requests', []);
+            'Content-Type' => 'application/json',
+        ])->postJson('/api/v1/document-requests', []);
 
         $response->assertStatus(422);
         
