@@ -25,7 +25,6 @@ class ApiBaseTest extends TestCase
         
         $this->user = User::factory()->create();
         $this->apiKey = ApiKey::factory()->create([
-            'user_id' => $this->user->id,
             'key' => 'test-api-key-12345',
             'is_active' => true,
         ]);
@@ -117,7 +116,6 @@ class ApiBaseTest extends TestCase
     public function test_api_key_middleware_inactive_key()
     {
         $inactiveKey = ApiKey::factory()->create([
-            'user_id' => $this->user->id,
             'is_active' => false,
         ]);
 

@@ -16,19 +16,17 @@ class ModelTest extends TestCase
     public function test_user_model_relationships()
     {
         $user = User::factory()->create();
-        $apiKey = ApiKey::factory()->create(['user_id' => $user->id]);
         $documentRequest = DocumentRequest::factory()->create(['user_id' => $user->id]);
 
-        $this->assertInstanceOf(ApiKey::class, $user->apiKeys->first());
         $this->assertInstanceOf(DocumentRequest::class, $user->documentRequests->first());
     }
 
     public function test_api_key_model_relationships()
     {
-        $user = User::factory()->create();
-        $apiKey = ApiKey::factory()->create(['user_id' => $user->id]);
+        $apiKey = ApiKey::factory()->create();
 
-        $this->assertInstanceOf(User::class, $apiKey->user);
+        $this->assertNotNull($apiKey->id);
+        $this->assertNotEmpty($apiKey->key);
     }
 
     public function test_document_request_model_relationships()

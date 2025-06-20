@@ -27,9 +27,8 @@ class S3FileUploadTest extends TestCase
         // Create test user
         $this->user = User::factory()->create();
         
-        // Create API key
+        // Create API key (without user_id since it's not in the schema)
         $this->apiKey = ApiKey::factory()->create([
-            'user_id' => $this->user->id,
             'key' => 'test-api-key-12345',
             'is_active' => true,
         ]);
@@ -350,6 +349,25 @@ class S3FileUploadTest extends TestCase
 
         $response = $this->withHeaders([
             'X-API-Key' => 'invalid-key',
+            'Content-Type' => 'multipart/form-data',
+        ])->post("/api/document-requests/{$this->documentRequest->id}/files", [
+            'file' => $file,
+            'file_type' => 'document',
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    public function test_upload_file_inactive_api_key()
+    {
+        $inactiveKey = ApiKey::factory()->create([
+            'is_active' => false,
+        ]);
+
+        $file = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
+
+        $response = $this->withHeaders([
+            'X-API-Key' => $inactiveKey->key,
             'Content-Type' => 'multipart/form-data',
         ])->post("/api/document-requests/{$this->documentRequest->id}/files", [
             'file' => $file,
