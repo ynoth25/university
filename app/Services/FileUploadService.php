@@ -17,34 +17,58 @@ class FileUploadService
     private const ALLOWED_FILE_TYPES = [
         'signature' => [
             'max_size' => 5 * 1024 * 1024, // 5MB
-            'allowed_mimes' => ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'],
+            'allowed_mimes' => [
+                'image/jpeg',
+                'image/png',
+                'image/gif',
+                'application/pdf',
+            ],
             'folder' => 'signatures'
         ],
         'affidavit_of_loss' => [
             'max_size' => 10 * 1024 * 1024, // 10MB
-            'allowed_mimes' => ['application/pdf', 'image/jpeg', 'image/png'],
+            'allowed_mimes' => [
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+            ],
             'folder' => 'supporting_documents'
         ],
         'birth_certificate' => [
             'max_size' => 10 * 1024 * 1024, // 10MB
-            'allowed_mimes' => ['application/pdf', 'image/jpeg', 'image/png'],
+            'allowed_mimes' => [
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+            ],
             'folder' => 'supporting_documents'
         ],
         'valid_id' => [
             'max_size' => 10 * 1024 * 1024, // 10MB
-            'allowed_mimes' => ['application/pdf', 'image/jpeg', 'image/png'],
+            'allowed_mimes' => [
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+            ],
             'folder' => 'supporting_documents'
         ],
         'transcript_of_records' => [
             'max_size' => 15 * 1024 * 1024, // 15MB
-            'allowed_mimes' => ['application/pdf', 'image/jpeg', 'image/png'],
+            'allowed_mimes' => [
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+            ],
             'folder' => 'supporting_documents'
         ],
         'other' => [
             'max_size' => 10 * 1024 * 1024, // 10MB
             'allowed_mimes' => [
-                'application/pdf', 'image/jpeg', 'image/png', 'application/msword',
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ],
             'folder' => 'supporting_documents'
         ]
@@ -69,7 +93,19 @@ class FileUploadService
 
         // Validate MIME type
         if (!in_array($file->getMimeType(), $config['allowed_mimes'])) {
-            throw new Exception("File type not allowed. Allowed types: " . implode(', ', $config['allowed_mimes']));
+            $allowedTypesArray = $config['allowed_mimes'];
+            $errorLines = [
+                'File type not allowed.',
+                'Allowed types:',
+            ];
+            foreach ($allowedTypesArray as $type) {
+                $errorLines[] = '    ' . $type;
+            }
+            $message = implode(
+                PHP_EOL,
+                $errorLines
+            );
+            throw new Exception($message);
         }
 
         // Generate unique filename
@@ -96,20 +132,22 @@ class FileUploadService
         $publicUrl = Storage::disk('s3')->url($filePath);
 
         // Create DocumentFile record
-        return DocumentFile::create([
-            'document_request_id' => $documentRequest->id,
-            'file_type' => $fileType,
-            'original_name' => $file->getClientOriginalName(),
-            'file_name' => $filePath,
-            'file_path' => $publicUrl,
-            'mime_type' => $file->getMimeType(),
-            'file_size' => $file->getSize(),
-            'metadata' => [
-                'uploaded_at' => now()->toISOString(),
-                'upload_method' => 'api',
-                'file_extension' => $file->getClientOriginalExtension(),
+        return DocumentFile::create(
+            [
+                'document_request_id' => $documentRequest->id,
+                'file_type' => $fileType,
+                'original_name' => $file->getClientOriginalName(),
+                'file_name' => $filePath,
+                'file_path' => $publicUrl,
+                'mime_type' => $file->getMimeType(),
+                'file_size' => $file->getSize(),
+                'metadata' => [
+                    'uploaded_at' => now()->toISOString(),
+                    'upload_method' => 'api',
+                    'file_extension' => $file->getClientOriginalExtension(),
+                ],
             ]
-        ]);
+        );
     }
 
     /**
@@ -169,8 +207,12 @@ class FileUploadService
         $randomString = Str::random(8);
 
         // Get the requestor's name from the document request
+        $requestorName = 'unknown';
         $documentRequest = DocumentRequest::where('request_id', $requestId)->first();
-        $requestorName = $documentRequest ? $this->sanitizeFileName($documentRequest->person_requesting['name'] ?? 'unknown') : 'unknown';
+        if ($documentRequest) {
+            $name = $documentRequest->person_requesting['name'] ?? 'unknown';
+            $requestorName = $this->sanitizeFileName($name);
+        }
 
         return "{$requestId}_{$requestorName}_{$fileType}_{$timestamp}_{$randomString}.{$extension}";
     }
@@ -237,8 +279,19 @@ class FileUploadService
         }
 
         if (!in_array($file->getMimeType(), $config['allowed_mimes'])) {
-            $errors[] = "File type not allowed. Allowed types: "
-                . implode(', ', $config['allowed_mimes']);
+            $allowedTypesArray = $config['allowed_mimes'];
+            $errorLines = [
+                'File type not allowed.',
+                'Allowed types:',
+            ];
+            foreach ($allowedTypesArray as $type) {
+                $errorLines[] = '    ' . $type;
+            }
+            $errorMsg = implode(
+                PHP_EOL,
+                $errorLines
+            );
+            $errors[] = $errorMsg;
         }
 
         return $errors;
