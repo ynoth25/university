@@ -162,7 +162,7 @@ class DocumentRequestController extends BaseController
     {
         try {
             $request->validate([
-                'status' => 'required|in:pending,processing,completed,rejected',
+                'status' => 'required|in:pending,processing,pickup,completed,rejected',
                 'remarks' => 'nullable|string|max:1000',
             ]);
 
@@ -197,37 +197,17 @@ class DocumentRequestController extends BaseController
                 'total' => DocumentRequest::count(),
                 'pending' => DocumentRequest::pending()->count(),
                 'processing' => DocumentRequest::processing()->count(),
+                'pickup' => DocumentRequest::pickup()->count(),
                 'completed' => DocumentRequest::completed()->count(),
                 'rejected' => DocumentRequest::rejected()->count(),
                 'by_type' => [
-                    'SF10' => DocumentRequest::whereJsonContains(
-                        'person_requesting->request_for',
-                        'SF10'
-                    )->count(),
-                    'ENROLLMENT_CERT' => DocumentRequest::whereJsonContains(
-                        'person_requesting->request_for',
-                        'ENROLLMENT_CERT'
-                    )->count(),
-                    'DIPLOMA' => DocumentRequest::whereJsonContains(
-                        'person_requesting->request_for',
-                        'DIPLOMA'
-                    )->count(),
-                    'CAV' => DocumentRequest::whereJsonContains(
-                        'person_requesting->request_for',
-                        'CAV'
-                    )->count(),
-                    'ENG. INST.' => DocumentRequest::whereJsonContains(
-                        'person_requesting->request_for',
-                        'ENG. INST.'
-                    )->count(),
-                    'CERT OF GRAD' => DocumentRequest::whereJsonContains(
-                        'person_requesting->request_for',
-                        'CERT OF GRAD'
-                    )->count(),
-                    'OTHERS' => DocumentRequest::whereJsonContains(
-                        'person_requesting->request_for',
-                        'OTHERS'
-                    )->count(),
+                    'SF10' => DocumentRequest::where('request_for', 'SF10')->count(),
+                    'ENROLLMENT_CERT' => DocumentRequest::where('request_for', 'ENROLLMENT_CERT')->count(),
+                    'DIPLOMA' => DocumentRequest::where('request_for', 'DIPLOMA')->count(),
+                    'CAV' => DocumentRequest::where('request_for', 'CAV')->count(),
+                    'ENG. INST.' => DocumentRequest::where('request_for', 'ENG. INST.')->count(),
+                    'CERT OF GRAD' => DocumentRequest::where('request_for', 'CERT OF GRAD')->count(),
+                    'OTHERS' => DocumentRequest::where('request_for', 'OTHERS')->count(),
                 ],
             ];
 

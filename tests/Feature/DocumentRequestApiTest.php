@@ -30,11 +30,9 @@ class DocumentRequestApiTest extends TestCase
             'major' => 'STEM',
             'adviser' => 'Mrs. Smith',
             'contact_number' => '09123456789',
-            'person_requesting' => [
-                'name' => 'John Doe',
-                'request_for' => 'SF10',
-                'signature' => 'https://example.com/signature.jpg'
-            ]
+            'person_requesting_name' => 'John Doe',
+            'request_for' => 'SF10',
+            'signature_url' => 'https://example.com/signature.jpg'
         ];
     }
 
@@ -96,7 +94,9 @@ class DocumentRequestApiTest extends TestCase
                         'major',
                         'adviser',
                         'contact_number',
-                        'person_requesting',
+                        'person_requesting_name',
+                        'request_for',
+                        'signature_url',
                         'status',
                         'created_at',
                         'updated_at'
@@ -134,7 +134,9 @@ class DocumentRequestApiTest extends TestCase
                     'section',
                     'adviser',
                     'contact_number',
-                    'person_requesting'
+                    'person_requesting_name',
+                    'request_for',
+                    'signature_url'
                 ]);
     }
 
@@ -160,14 +162,14 @@ class DocumentRequestApiTest extends TestCase
     public function test_validation_for_invalid_document_type(): void
     {
         $data = $this->validDocumentRequestData;
-        $data['person_requesting']['request_for'] = 'INVALID_TYPE';
+        $data['request_for'] = 'INVALID_TYPE';
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->getTestApiKey()->key
         ])->postJson('/api/v1/document-requests', $data);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['person_requesting.request_for']);
+                ->assertJsonValidationErrors(['request_for']);
     }
 
     /**
@@ -354,6 +356,32 @@ class DocumentRequestApiTest extends TestCase
     }
 
     /**
+     * Test updating status to pickup
+     */
+    public function test_can_update_status_to_pickup(): void
+    {
+        $documentRequest = DocumentRequest::factory()->create(['status' => 'processing']);
+
+        $response = $this->withHeaders([
+            'X-API-Key' => $this->getTestApiKey()->key
+        ])->patchJson("/api/v1/document-requests/{$documentRequest->id}/status", [
+            'status' => 'pickup',
+            'remarks' => 'Document is ready for pickup'
+        ]);
+
+        $response->assertStatus(200)
+                ->assertJson([
+                    'success' => true,
+                    'message' => 'Document request status updated successfully'
+                ]);
+
+        $this->assertDatabaseHas('document_requests', [
+            'id' => $documentRequest->id,
+            'status' => 'pickup'
+        ]);
+    }
+
+    /**
      * Test updating status to completed sets processed_at
      */
     public function test_completed_status_sets_processed_at(): void
@@ -402,10 +430,11 @@ class DocumentRequestApiTest extends TestCase
         // Create requests with different statuses and types
         DocumentRequest::factory()->create(['status' => 'pending']);
         DocumentRequest::factory()->create(['status' => 'processing']);
+        DocumentRequest::factory()->create(['status' => 'pickup']);
         DocumentRequest::factory()->create(['status' => 'completed']);
         DocumentRequest::factory()->create([
             'status' => 'pending',
-            'person_requesting' => ['request_for' => 'SF10']
+            'request_for' => 'SF10'
         ]);
 
         $response = $this->withHeaders([
@@ -423,6 +452,7 @@ class DocumentRequestApiTest extends TestCase
                         'total',
                         'pending',
                         'processing',
+                        'pickup',
                         'completed',
                         'rejected',
                         'by_type'
@@ -430,9 +460,10 @@ class DocumentRequestApiTest extends TestCase
                     'message'
                 ]);
 
-        $this->assertEquals(4, $response['data']['total']);
+        $this->assertEquals(5, $response['data']['total']);
         $this->assertEquals(2, $response['data']['pending']);
         $this->assertEquals(1, $response['data']['processing']);
+        $this->assertEquals(1, $response['data']['pickup']);
         $this->assertEquals(1, $response['data']['completed']);
     }
 
@@ -474,12 +505,15 @@ class DocumentRequestApiTest extends TestCase
     {
         // Create a document request first
         $documentRequest = DocumentRequest::factory()->create([
-            'person_requesting' => [
-                'name' => 'John Doe',
-                'email' => 'john@example.com',
-                'phone' => '1234567890'
-            ]
+            'person_requesting_name' => 'John Doe'
         ]);
+
+        // Debug: Check if the person_requesting_name was set correctly
+        $this->assertEquals('John Doe', $documentRequest->getAttributes()['person_requesting_name']);
+        
+        // Debug: Print the raw attributes
+        echo "Raw attributes: " . print_r($documentRequest->getAttributes(), true) . "\n";
+        echo "Person requesting name: " . $documentRequest->person_requesting_name . "\n";
 
         $apiKey = ApiKey::factory()->create(['is_active' => true]);
 
@@ -498,6 +532,14 @@ class DocumentRequestApiTest extends TestCase
 
         // Check that the filename contains the requestor name
         $uploadedFile = $response->json('data');
+        
+        // Debug: Print the actual filename
+        echo "Actual filename: " . $uploadedFile['file_name'] . "\n";
+        echo "Expected to contain: John_Doe\n";
+        echo "Request ID: " . $documentRequest->request_id . "\n";
+        echo "Full response data: " . print_r($uploadedFile, true) . "\n";
+        
+        // Remove debug output
         $this->assertStringContainsString('John_Doe', $uploadedFile['file_name']);
         $this->assertStringContainsString($documentRequest->request_id, $uploadedFile['file_name']);
         $this->assertStringContainsString('signature', $uploadedFile['file_name']);

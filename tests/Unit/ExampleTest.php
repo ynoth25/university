@@ -87,25 +87,22 @@ class ExampleTest extends TestCase
 
     public function test_document_request_person_requesting_casting()
     {
-        $personRequesting = [
-            'name' => 'John Doe',
-            'request_for' => 'TRANSCRIPT',
-            'signature' => 'https://example.com/signature.jpg'
-        ];
-
         $documentRequest = DocumentRequest::factory()->create([
-            'person_requesting' => $personRequesting
+            'person_requesting_name' => 'John Doe',
+            'request_for' => 'ENROLLMENT_CERT',
+            'signature_url' => 'https://example.com/signature.jpg'
         ]);
 
-        $this->assertEquals($personRequesting, $documentRequest->person_requesting);
-        $this->assertIsArray($documentRequest->person_requesting);
         $this->assertEquals('John Doe', $documentRequest->person_requesting_name);
-        $this->assertEquals('TRANSCRIPT', $documentRequest->request_type);
+        $this->assertEquals('ENROLLMENT_CERT', $documentRequest->request_for);
+        $this->assertEquals('https://example.com/signature.jpg', $documentRequest->signature_url);
     }
 
     public function test_document_request_signature_url()
     {
-        $documentRequest = DocumentRequest::factory()->create();
+        $documentRequest = DocumentRequest::factory()->create([
+            'signature_url' => null
+        ]);
 
         // No signature file exists
         $this->assertEquals('', $documentRequest->signature_url);

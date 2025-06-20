@@ -19,7 +19,7 @@ class DocumentRequestFactory extends Factory
     {
         $documentTypes = ['SF10', 'ENROLLMENT_CERT', 'DIPLOMA', 'CAV', 'ENG. INST.', 'CERT OF GRAD', 'OTHERS'];
         $genders = ['male', 'female', 'other'];
-        $statuses = ['pending', 'processing', 'completed', 'rejected'];
+        $statuses = ['pending', 'processing', 'pickup', 'completed', 'rejected'];
         $grades = ['7', '8', '9', '10', '11', '12'];
         $sections = ['A', 'B', 'C', 'D', 'E'];
         $majors = ['STEM', 'HUMSS', 'ABM', 'GAS', 'TVL', null];
@@ -34,11 +34,9 @@ class DocumentRequestFactory extends Factory
             'major' => $this->faker->randomElement($majors),
             'adviser' => $this->faker->name(),
             'contact_number' => $this->faker->numerify('09##########'),
-            'person_requesting' => [
-                'name' => $this->faker->name(),
-                'request_for' => $this->faker->randomElement($documentTypes),
-                'signature' => $this->faker->imageUrl(640, 480, 'signature', true),
-            ],
+            'person_requesting_name' => $this->faker->name(),
+            'request_for' => $this->faker->randomElement($documentTypes),
+            'signature_url' => $this->faker->imageUrl(640, 480, 'signature', true),
             'status' => $this->faker->randomElement($statuses),
             'remarks' => $this->faker->optional()->sentence(),
             'processed_at' => $this->faker->optional()->dateTimeBetween('-1 year', 'now'),
@@ -63,6 +61,17 @@ class DocumentRequestFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => 'processing',
+            'processed_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the document request is ready for pickup.
+     */
+    public function pickup(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'pickup',
             'processed_at' => null,
         ]);
     }
@@ -96,11 +105,7 @@ class DocumentRequestFactory extends Factory
     public function sf10(): static
     {
         return $this->state(fn (array $attributes) => [
-            'person_requesting' => [
-                'name' => $this->faker->name(),
-                'request_for' => 'SF10',
-                'signature' => $this->faker->imageUrl(640, 480, 'signature', true),
-            ],
+            'request_for' => 'SF10',
         ]);
     }
 
@@ -110,11 +115,7 @@ class DocumentRequestFactory extends Factory
     public function enrollmentCert(): static
     {
         return $this->state(fn (array $attributes) => [
-            'person_requesting' => [
-                'name' => $this->faker->name(),
-                'request_for' => 'ENROLLMENT_CERT',
-                'signature' => $this->faker->imageUrl(640, 480, 'signature', true),
-            ],
+            'request_for' => 'ENROLLMENT_CERT',
         ]);
     }
 
@@ -124,11 +125,7 @@ class DocumentRequestFactory extends Factory
     public function diploma(): static
     {
         return $this->state(fn (array $attributes) => [
-            'person_requesting' => [
-                'name' => $this->faker->name(),
-                'request_for' => 'DIPLOMA',
-                'signature' => $this->faker->imageUrl(640, 480, 'signature', true),
-            ],
+            'request_for' => 'DIPLOMA',
         ]);
     }
 }

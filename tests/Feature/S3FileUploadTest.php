@@ -44,11 +44,9 @@ class S3FileUploadTest extends TestCase
             'major' => 'STEM',
             'adviser' => 'Dr. Smith',
             'contact_number' => '09123456789',
-            'person_requesting' => [
-                'name' => 'John Doe',
-                'request_for' => 'SF10',
-                'signature' => 'https://example.com/signature.png',
-            ],
+            'person_requesting_name' => 'Burnice Reilly',
+            'request_for' => 'ENROLLMENT_CERT',
+            'signature_url' => 'https://via.placeholder.com/640x480.png/00ffcc?text=signature+dolorem',
             'status' => 'pending',
         ]);
 

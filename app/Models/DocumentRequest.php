@@ -22,7 +22,9 @@ class DocumentRequest extends Model
         'major',
         'adviser',
         'contact_number',
-        'person_requesting',
+        'person_requesting_name',
+        'request_for',
+        'signature_url',
         'status',
         'remarks',
         'request_id',
@@ -30,7 +32,6 @@ class DocumentRequest extends Model
     ];
 
     protected $casts = [
-        'person_requesting' => 'array',
         'processed_at' => 'datetime',
     ];
 
@@ -104,7 +105,7 @@ class DocumentRequest extends Model
      */
     public function getPersonRequestingNameAttribute(): string
     {
-        return $this->person_requesting['name'] ?? '';
+        return $this->attributes['person_requesting_name'] ?? '';
     }
 
     /**
@@ -112,16 +113,19 @@ class DocumentRequest extends Model
      */
     public function getRequestTypeAttribute(): string
     {
-        return $this->person_requesting['request_for'] ?? '';
+        return $this->request_for ?? '';
     }
 
     /**
-     * Get the signature URL (now from S3 file)
+     * Get the signature URL (now from S3 file or direct URL)
      */
     public function getSignatureUrlAttribute(): string
     {
         $signatureFile = $this->signatureFile();
-        return $signatureFile ? $signatureFile->url : '';
+        if ($signatureFile && !empty($signatureFile->url)) {
+            return $signatureFile->url;
+        }
+        return $this->attributes['signature_url'] ?? '';
     }
 
     /**
@@ -138,6 +142,14 @@ class DocumentRequest extends Model
     public function scopeProcessing($query)
     {
         return $query->where('status', 'processing');
+    }
+
+    /**
+     * Scope for pickup requests
+     */
+    public function scopePickup($query)
+    {
+        return $query->where('status', 'pickup');
     }
 
     /**

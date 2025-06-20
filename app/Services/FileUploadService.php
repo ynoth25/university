@@ -109,7 +109,7 @@ class FileUploadService
         }
 
         // Generate unique filename
-        $fileName = $this->generateFileName($file, $fileType, $documentRequest->request_id);
+        $fileName = $this->generateFileName($file, $fileType, $documentRequest);
         $filePath = $config['folder'] . '/' . $fileName;
 
         // Upload to S3
@@ -200,7 +200,7 @@ class FileUploadService
     /**
      * Generate a unique filename
      */
-    private function generateFileName(UploadedFile $file, string $fileType, string $requestId): string
+    private function generateFileName(UploadedFile $file, string $fileType, DocumentRequest $documentRequest): string
     {
         $extension = $file->getClientOriginalExtension();
         $timestamp = now()->format('Y-m-d_H-i-s');
@@ -208,13 +208,26 @@ class FileUploadService
 
         // Get the requestor's name from the document request
         $requestorName = 'unknown';
-        $documentRequest = DocumentRequest::where('request_id', $requestId)->first();
         if ($documentRequest) {
-            $name = $documentRequest->person_requesting['name'] ?? 'unknown';
+            // Use getAttribute to get the raw database value, bypassing the accessor
+            $name = $documentRequest->getAttribute('person_requesting_name') ?? 'unknown';
             $requestorName = $this->sanitizeFileName($name);
+            
+            // Debug logging
+            \Log::info("FileUploadService: Generating filename", [
+                'request_id' => $documentRequest->request_id,
+                'person_requesting_name' => $documentRequest->getAttribute('person_requesting_name'),
+                'sanitized_name' => $requestorName
+            ]);
+            
+            // Add debug output for immediate visibility
+            echo "DEBUG - Raw name: " . $name . "\n";
+            echo "DEBUG - Sanitized name: " . $requestorName . "\n";
         }
 
-        return "{$requestId}_{$requestorName}_{$fileType}_{$timestamp}_{$randomString}.{$extension}";
+        // Remove debug output
+        // $filename = ...
+        return "{$documentRequest->request_id}_{$requestorName}_{$fileType}_{$timestamp}_{$randomString}.{$extension}";
     }
 
     /**

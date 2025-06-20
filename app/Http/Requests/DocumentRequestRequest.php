@@ -32,12 +32,10 @@ class DocumentRequestRequest extends FormRequest
             'adviser' => 'required|string|max:255',
             'contact_number' => 'required|string|max:20',
 
-            // Person requesting validation
-            'person_requesting' => 'required|array',
-            'person_requesting.name' => 'required|string|max:255',
-            'person_requesting.request_for' => 'required|in:SF10,ENROLLMENT_CERT,DIPLOMA,CAV,' .
-                'ENG. INST.,CERT OF GRAD,OTHERS',
-            'person_requesting.signature' => 'required|url|max:500',
+            // Individual person requesting validation
+            'person_requesting_name' => 'required|string|max:255',
+            'request_for' => 'required|in:SF10,ENROLLMENT_CERT,DIPLOMA,CAV,ENG. INST.,CERT OF GRAD,OTHERS',
+            'signature_url' => 'required|url|max:500',
         ];
     }
 
@@ -56,13 +54,12 @@ class DocumentRequestRequest extends FormRequest
             'section.required' => 'Section is required.',
             'adviser.required' => 'Adviser name is required.',
             'contact_number.required' => 'Contact number is required.',
-            'person_requesting.required' => 'Person requesting information is required.',
-            'person_requesting.name.required' => 'Person requesting name is required.',
-            'person_requesting.request_for.required' => 'Document type is required.',
-            'person_requesting.request_for.in' => 'Document type must be one of: SF10, ENROLLMENT_CERT, ' .
+            'person_requesting_name.required' => 'Person requesting name is required.',
+            'request_for.required' => 'Document type is required.',
+            'request_for.in' => 'Document type must be one of: SF10, ENROLLMENT_CERT, ' .
                 'DIPLOMA, CAV, ENG. INST., CERT OF GRAD, OTHERS.',
-            'person_requesting.signature.required' => 'Signature URL is required.',
-            'person_requesting.signature.url' => 'Signature must be a valid URL.',
+            'signature_url.required' => 'Signature URL is required.',
+            'signature_url.url' => 'Signature must be a valid URL.',
         ];
     }
 
@@ -75,9 +72,9 @@ class DocumentRequestRequest extends FormRequest
             'learning_reference_number' => 'learning reference number',
             'name_of_student' => 'student name',
             'last_schoolyear_attended' => 'last school year attended',
-            'person_requesting.name' => 'person requesting name',
-            'person_requesting.request_for' => 'document type',
-            'person_requesting.signature' => 'signature',
+            'person_requesting_name' => 'person requesting name',
+            'request_for' => 'document type',
+            'signature_url' => 'signature',
         ];
     }
 }
