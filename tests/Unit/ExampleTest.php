@@ -16,7 +16,10 @@ class ModelTest extends TestCase
     public function test_user_model_relationships()
     {
         $user = User::factory()->create();
-        $documentRequest = DocumentRequest::factory()->create(['user_id' => $user->id]);
+        $documentRequest = DocumentRequest::factory()->create([
+            'learning_reference_number' => 'LRN001',
+            'name_of_student' => 'Test Student',
+        ]);
 
         $this->assertInstanceOf(DocumentRequest::class, $user->documentRequests->first());
     }
@@ -32,7 +35,10 @@ class ModelTest extends TestCase
     public function test_document_request_model_relationships()
     {
         $user = User::factory()->create();
-        $documentRequest = DocumentRequest::factory()->create(['user_id' => $user->id]);
+        $documentRequest = DocumentRequest::factory()->create([
+            'learning_reference_number' => 'LRN001',
+            'name_of_student' => 'Test Student',
+        ]);
         $documentFile = DocumentFile::factory()->create(['document_request_id' => $documentRequest->id]);
 
         $this->assertInstanceOf(User::class, $documentRequest->user);
@@ -49,12 +55,24 @@ class ModelTest extends TestCase
 
     public function test_document_request_status_scopes()
     {
-        DocumentRequest::factory()->create(['status' => 'pending']);
-        DocumentRequest::factory()->create(['status' => 'approved']);
-        DocumentRequest::factory()->create(['status' => 'rejected']);
+        DocumentRequest::factory()->create([
+            'learning_reference_number' => 'LRN001',
+            'name_of_student' => 'Student 1',
+            'status' => 'pending',
+        ]);
+        DocumentRequest::factory()->create([
+            'learning_reference_number' => 'LRN002',
+            'name_of_student' => 'Student 2',
+            'status' => 'completed',
+        ]);
+        DocumentRequest::factory()->create([
+            'learning_reference_number' => 'LRN003',
+            'name_of_student' => 'Student 3',
+            'status' => 'rejected',
+        ]);
 
         $this->assertEquals(1, DocumentRequest::pending()->count());
-        $this->assertEquals(1, DocumentRequest::approved()->count());
+        $this->assertEquals(1, DocumentRequest::completed()->count());
         $this->assertEquals(1, DocumentRequest::rejected()->count());
     }
 
@@ -71,9 +89,18 @@ class ModelTest extends TestCase
 
     public function test_document_request_search_scope()
     {
-        DocumentRequest::factory()->create(['requestor_name' => 'John Doe']);
-        DocumentRequest::factory()->create(['requestor_name' => 'Jane Smith']);
-        DocumentRequest::factory()->create(['requestor_name' => 'Bob Johnson']);
+        DocumentRequest::factory()->create([
+            'learning_reference_number' => 'LRN001',
+            'name_of_student' => 'John Doe',
+        ]);
+        DocumentRequest::factory()->create([
+            'learning_reference_number' => 'LRN002',
+            'name_of_student' => 'Jane Smith',
+        ]);
+        DocumentRequest::factory()->create([
+            'learning_reference_number' => 'LRN003',
+            'name_of_student' => 'Bob Johnson',
+        ]);
 
         $this->assertEquals(1, DocumentRequest::search('John')->count());
         $this->assertEquals(2, DocumentRequest::search('o')->count()); // John and Bob

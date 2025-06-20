@@ -186,7 +186,9 @@ class ApiBaseTest extends TestCase
         // Create multiple document requests
         for ($i = 0; $i < 15; $i++) {
             \App\Models\DocumentRequest::factory()->create([
-                'user_id' => $this->user->id,
+                'learning_reference_number' => "LRN{$i}",
+                'name_of_student' => "Student {$i}",
+                'status' => 'pending',
             ]);
         }
 
@@ -206,12 +208,14 @@ class ApiBaseTest extends TestCase
     public function test_api_filtering()
     {
         \App\Models\DocumentRequest::factory()->create([
-            'user_id' => $this->user->id,
+            'learning_reference_number' => 'LRN001',
+            'name_of_student' => 'Student One',
             'status' => 'pending',
         ]);
         \App\Models\DocumentRequest::factory()->create([
-            'user_id' => $this->user->id,
-            'status' => 'approved',
+            'learning_reference_number' => 'LRN002',
+            'name_of_student' => 'Student Two',
+            'status' => 'completed',
         ]);
 
         $response = $this->withHeaders([
@@ -228,12 +232,12 @@ class ApiBaseTest extends TestCase
     public function test_api_searching()
     {
         \App\Models\DocumentRequest::factory()->create([
-            'user_id' => $this->user->id,
-            'requestor_name' => 'John Doe',
+            'learning_reference_number' => 'LRN001',
+            'name_of_student' => 'John Doe',
         ]);
         \App\Models\DocumentRequest::factory()->create([
-            'user_id' => $this->user->id,
-            'requestor_name' => 'Jane Smith',
+            'learning_reference_number' => 'LRN002',
+            'name_of_student' => 'Jane Smith',
         ]);
 
         $response = $this->withHeaders([
@@ -244,30 +248,30 @@ class ApiBaseTest extends TestCase
         
         $data = $response->json('data');
         $this->assertEquals(1, $data['total']);
-        $this->assertEquals('John Doe', $data['document_requests'][0]['requestor_name']);
+        $this->assertEquals('John Doe', $data['document_requests'][0]['name_of_student']);
     }
 
     public function test_api_sorting()
     {
         \App\Models\DocumentRequest::factory()->create([
-            'user_id' => $this->user->id,
-            'requestor_name' => 'Alice',
+            'learning_reference_number' => 'LRN001',
+            'name_of_student' => 'Alice',
             'created_at' => now()->subDays(1),
         ]);
         \App\Models\DocumentRequest::factory()->create([
-            'user_id' => $this->user->id,
-            'requestor_name' => 'Bob',
+            'learning_reference_number' => 'LRN002',
+            'name_of_student' => 'Bob',
             'created_at' => now(),
         ]);
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get('/api/document-requests?sort=requestor_name&order=desc');
+        ])->get('/api/document-requests?sort=name_of_student&order=desc');
 
         $response->assertStatus(200);
         
         $data = $response->json('data');
-        $this->assertEquals('Bob', $data['document_requests'][0]['requestor_name']);
+        $this->assertEquals('Bob', $data['document_requests'][0]['name_of_student']);
     }
 
     public function test_api_validation_errors()

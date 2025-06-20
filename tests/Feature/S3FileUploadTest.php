@@ -33,13 +33,22 @@ class S3FileUploadTest extends TestCase
             'is_active' => true,
         ]);
         
-        // Create document request
+        // Create document request using only fields that exist in the migration
         $this->documentRequest = DocumentRequest::factory()->create([
-            'user_id' => $this->user->id,
-            'requestor_name' => 'John Doe',
-            'requestor_email' => 'john@example.com',
-            'document_type' => 'transcript',
-            'purpose' => 'Graduate school application',
+            'learning_reference_number' => '1234567890',
+            'name_of_student' => 'John Doe',
+            'last_schoolyear_attended' => '2024-2025',
+            'gender' => 'male',
+            'grade' => '12',
+            'section' => 'A',
+            'major' => 'STEM',
+            'adviser' => 'Dr. Smith',
+            'contact_number' => '09123456789',
+            'person_requesting' => [
+                'name' => 'John Doe',
+                'request_for' => 'SF10',
+                'signature' => 'https://example.com/signature.png',
+            ],
             'status' => 'pending',
         ]);
 
