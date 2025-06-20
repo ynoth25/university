@@ -1,0 +1,3 @@
+  - name: Run PHPCS (PSR-12 with Laravel test exceptions)
+    run: ./vendor/bin/phpcs --standard=phpcs.xml
+    # Use custom config to allow Laravel's snake_case test method names in tests/ 

@@ -59,4 +59,21 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Code Quality & Style
+
+This project uses PHP_CodeSniffer (PHPCS) for code style checks, with a custom configuration in `phpcs.xml`.
+
+- **Run code style checks:**
+  ```sh
+  ./vendor/bin/phpcs --standard=phpcs.xml
+  ```
+- **Auto-fix fixable issues:**
+  ```sh
+  ./vendor/bin/phpcbf --standard=phpcs.xml
+  ```
+
+> **Note:**
+> The custom `phpcs.xml` allows Laravel's snake_case test method names in the `tests/` directory. If you run PHPCS with `--standard=PSR12`, you will see errors for test method names not being in camel caps format. This is expected and can be ignored as long as you use the custom config for linting and CI/CD.
+
 # Trigger CI/CD
