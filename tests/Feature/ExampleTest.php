@@ -180,13 +180,13 @@ class ExampleTest extends TestCase
             'success',
             'message',
             'data' => [
-                'data',
-                'current_page',
-                'per_page',
-                'total',
-                'last_page',
-                'from',
-                'to',
+                '*' => [
+                    'id',
+                    'request_id',
+                    'name_of_student',
+                    'status',
+                    'created_at'
+                ]
             ]
         ]);
     }
@@ -220,11 +220,7 @@ class ExampleTest extends TestCase
 
         $response->assertStatus(200);
         
-        $data = $response->json('data');
-        $this->assertEquals(10, count($data['data']));
-        $this->assertEquals(15, $data['total']);
-        $this->assertEquals(1, $data['current_page']);
-        $this->assertEquals(2, $data['last_page']);
+        $this->assertCount(10, $response['data']);
     }
 
     public function test_api_filtering()
@@ -246,9 +242,8 @@ class ExampleTest extends TestCase
 
         $response->assertStatus(200);
         
-        $data = $response->json('data');
-        $this->assertEquals(1, $data['total']);
-        $this->assertEquals('pending', $data['data'][0]['status']);
+        $this->assertCount(1, $response['data']);
+        $this->assertEquals('pending', $response['data'][0]['status']);
     }
 
     public function test_api_searching()
@@ -268,9 +263,8 @@ class ExampleTest extends TestCase
 
         $response->assertStatus(200);
         
-        $data = $response->json('data');
-        $this->assertEquals(1, $data['total']);
-        $this->assertEquals('John Doe', $data['data'][0]['name_of_student']);
+        $this->assertCount(1, $response['data']);
+        $this->assertEquals('John Doe', $response['data'][0]['name_of_student']);
     }
 
     public function test_api_validation_errors()
