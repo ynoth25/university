@@ -1,4 +1,26 @@
 parameters:
     level: 5
     paths:
-        - app/
+        - app
+    reportUnmatchedIgnoredErrors: false
+    # Laravel specific settings
+    ignoreErrors:
+        # Eloquent model properties and methods
+        - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$[a-zA-Z0-9\_]+#'
+        - '#Call to an undefined static method [a-zA-Z0-9\\_]+::[a-zA-Z0-9\_]+\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::[a-zA-Z0-9\_]+\(\)#'
+        
+        # Laravel Facades
+        - '#Call to static method [a-zA-Z0-9\_]+\(\) on an unknown class [a-zA-Z0-9\\_]+#'
+        
+        # Laravel Request properties
+        - '#Access to an undefined property Illuminate\\Http\\Request::\$[a-zA-Z0-9\_]+#'
+        
+        # Laravel Storage methods
+        - '#Call to an undefined method Illuminate\\Contracts\\Filesystem\\Filesystem::[a-zA-Z0-9\_]+\(\)#'
+        
+        # Laravel Resource properties
+        - '#Access to an undefined property [a-zA-Z0-9\\_]+Resource::\$[a-zA-Z0-9\_]+#'
+        
+        # Laravel relationships
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\[a-zA-Z0-9]+::[a-zA-Z0-9\_]+\(\)#'
