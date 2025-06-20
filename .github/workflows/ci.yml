@@ -1,4 +1,4 @@
-name: Laravel CI/CD
+name: CI
 
 on:
   push:
@@ -138,14 +138,8 @@ jobs:
     - name: Install PHP dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     
-    - name: Install PHP CodeSniffer
-      run: composer require --dev squizlabs/php_codesniffer
-    
     - name: Run PHP CodeSniffer
       run: ./vendor/bin/phpcs --standard=phpcs.xml
-    
-    - name: Install PHPStan
-      run: composer require --dev phpstan/phpstan
     
     - name: Run PHPStan
       run: ./vendor/bin/phpstan analyse app/ --level=5
@@ -170,126 +164,4 @@ jobs:
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     
     - name: Run Composer Security Audit
-      run: composer audit --format=json --no-interaction
-
-  build:
-    name: Build Application
-    runs-on: ubuntu-latest
-    needs: [test, code-quality, security]
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ env.PHP_VERSION }}
-        extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, iconv, json, mbstring, pdo, phar, tokenizer, xml, zip, curl, fileinfo
-        tools: composer:v2
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-    
-    - name: Install PHP dependencies
-      run: composer install --no-dev --optimize-autoloader --no-interaction
-    
-    - name: Install Node.js dependencies
-      run: |
-        if [ -f "package-lock.json" ]; then
-          npm ci
-        else
-          npm install
-        fi
-    
-    - name: Build assets
-      run: npm run build
-    
-    - name: Optimize Laravel
-      run: |
-        php artisan config:cache
-        php artisan route:cache
-        php artisan view:cache
-    
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: laravel-build
-        path: |
-          app/
-          bootstrap/
-          config/
-          database/
-          lang/
-          resources/
-          routes/
-          storage/
-          vendor/
-          public/
-          .env.example
-          artisan
-          composer.json
-          composer.lock
-
-  deploy-staging:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/develop'
-    environment: staging
-    
-    steps:
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: laravel-build
-        path: ./
-    
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-    
-    - name: Deploy to S3 (Staging)
-      run: |
-        aws s3 sync public/ s3://${{ secrets.AWS_STAGING_BUCKET }} --delete
-        aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_STAGING_CLOUDFRONT_ID }} --paths "/*"
-
-  deploy-production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    environment: production
-    
-    steps:
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: laravel-build
-        path: ./
-    
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-    
-    - name: Deploy to S3 (Production)
-      run: |
-        aws s3 sync public/ s3://${{ secrets.AWS_BUCKET }} --delete
-        aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_ID }} --paths "/*"
-    
-    - name: Notify deployment success
-      run: |
-        echo "🚀 Deployment to production completed successfully!"
-        echo "Environment: Production"
-        echo "Commit: ${{ github.sha }}"
-        echo "Branch: ${{ github.ref_name }}" 
+      run: composer audit --format=json --no-interaction 
