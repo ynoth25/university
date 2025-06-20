@@ -55,7 +55,7 @@ class DocumentFile extends Model
             $bytes /= 1024;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 
     /**
@@ -74,6 +74,7 @@ class DocumentFile extends Model
         if ($this->exists()) {
             return Storage::disk('s3')->delete($this->file_name);
         }
+
         return false;
     }
 
@@ -113,7 +114,7 @@ class DocumentFile extends Model
 
         // Delete file from S3 when record is deleted
         static::deleting(function ($documentFile) {
-            \Log::info('Deleting DocumentFile: ' . $documentFile->file_name);
+            \Log::info('Deleting DocumentFile: '.$documentFile->file_name);
             if (Storage::disk('s3')->exists($documentFile->file_name)) {
                 Storage::disk('s3')->delete($documentFile->file_name);
             }

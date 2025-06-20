@@ -21,9 +21,10 @@ abstract class TestCase extends BaseTestCase
      */
     protected function getTestApiKey(): ApiKey
     {
-        if (!isset($this->testApiKey)) {
+        if (! isset($this->testApiKey)) {
             $this->testApiKey = ApiKey::createKey('Test API Key');
         }
+
         return $this->testApiKey;
     }
 
@@ -68,8 +69,8 @@ abstract class TestCase extends BaseTestCase
             'person_requesting' => [
                 'name' => 'John Doe',
                 'request_for' => 'SF10',
-                'signature' => 'https://example.com/signature.jpg'
-            ]
+                'signature' => 'https://example.com/signature.jpg',
+            ],
         ];
     }
 }

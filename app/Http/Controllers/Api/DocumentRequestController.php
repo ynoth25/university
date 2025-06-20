@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\DocumentRequestRequest;
 use App\Http\Resources\DocumentRequestResource;
 use App\Models\DocumentRequest;
@@ -34,8 +33,8 @@ class DocumentRequestController extends BaseController
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('name_of_student', 'like', "%{$search}%")
-                      ->orWhere('learning_reference_number', 'like', "%{$search}%")
-                      ->orWhere('request_id', 'like', "%{$search}%");
+                        ->orWhere('learning_reference_number', 'like', "%{$search}%")
+                        ->orWhere('request_id', 'like', "%{$search}%");
                 });
             }
 
@@ -78,7 +77,7 @@ class DocumentRequestController extends BaseController
         try {
             $documentRequest = DocumentRequest::find($id);
 
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 
@@ -99,7 +98,7 @@ class DocumentRequestController extends BaseController
         try {
             $documentRequest = DocumentRequest::where('request_id', $requestId)->first();
 
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 
@@ -120,7 +119,7 @@ class DocumentRequestController extends BaseController
         try {
             $documentRequest = DocumentRequest::find($id);
 
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 
@@ -143,7 +142,7 @@ class DocumentRequestController extends BaseController
         try {
             $documentRequest = DocumentRequest::find($id);
 
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 
@@ -168,7 +167,7 @@ class DocumentRequestController extends BaseController
 
             $documentRequest = DocumentRequest::find($id);
 
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 

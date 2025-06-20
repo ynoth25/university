@@ -14,14 +14,16 @@ class ExampleTest extends TestCase
     use RefreshDatabase;
 
     protected BaseController $baseController;
+
     protected ApiKey $apiKey;
+
     protected User $user;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->baseController = new BaseController();
+        $this->baseController = new BaseController;
 
         $this->user = User::factory()->create();
         $this->apiKey = ApiKey::factory()->create([
@@ -185,9 +187,9 @@ class ExampleTest extends TestCase
                     'request_id',
                     'name_of_student',
                     'status',
-                    'created_at'
-                ]
-            ]
+                    'created_at',
+                ],
+            ],
         ]);
     }
 

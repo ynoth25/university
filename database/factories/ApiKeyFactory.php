@@ -27,7 +27,7 @@ class ApiKeyFactory extends Factory
     {
         return [
             'name' => $this->faker->words(2, true),
-            'key' => 'test_' . Str::random(32),
+            'key' => 'test_'.Str::random(32),
             'is_active' => true,
             'last_used_at' => null,
             'expires_at' => null,
@@ -63,4 +63,4 @@ class ApiKeyFactory extends Factory
             'expires_at' => $this->faker->dateTimeBetween('-1 month', '-1 day'),
         ]);
     }
-} 
+}

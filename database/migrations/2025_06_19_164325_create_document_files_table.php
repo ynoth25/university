@@ -22,7 +22,7 @@ return new class extends Migration
             $table->bigInteger('file_size'); // in bytes
             $table->json('metadata')->nullable(); // Additional file metadata
             $table->timestamps();
-            
+
             // Indexes for better performance
             $table->index(['document_request_id', 'file_type']);
             $table->index('file_type');

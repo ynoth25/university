@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Models;
 
-use Tests\TestCase;
 use App\Models\DocumentFile;
 use App\Models\DocumentRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
 
 class DocumentFileTest extends TestCase
 {
@@ -48,7 +48,7 @@ class DocumentFileTest extends TestCase
     public function test_url_attribute_returns_file_path()
     {
         $file = DocumentFile::factory()->create([
-            'file_path' => 'https://example.com/file.pdf'
+            'file_path' => 'https://example.com/file.pdf',
         ]);
 
         $this->assertEquals('https://example.com/file.pdf', $file->url);
@@ -78,7 +78,7 @@ class DocumentFileTest extends TestCase
     public function test_exists_method_checks_s3_storage()
     {
         $file = DocumentFile::factory()->create([
-            'file_name' => 'test/file.pdf'
+            'file_name' => 'test/file.pdf',
         ]);
 
         // File doesn't exist in fake storage
@@ -92,7 +92,7 @@ class DocumentFileTest extends TestCase
     public function test_delete_file_method_deletes_from_s3()
     {
         $file = DocumentFile::factory()->create([
-            'file_name' => 'test/file.pdf'
+            'file_name' => 'test/file.pdf',
         ]);
 
         // Create file in fake storage
@@ -108,7 +108,7 @@ class DocumentFileTest extends TestCase
     public function test_delete_file_method_returns_false_when_file_not_exists()
     {
         $file = DocumentFile::factory()->create([
-            'file_name' => 'test/file.pdf'
+            'file_name' => 'test/file.pdf',
         ]);
 
         // File doesn't exist in storage
@@ -119,7 +119,7 @@ class DocumentFileTest extends TestCase
     public function test_temporary_url_method_generates_temporary_url()
     {
         $file = DocumentFile::factory()->create([
-            'file_name' => 'test/file.pdf'
+            'file_name' => 'test/file.pdf',
         ]);
 
         // Create file in fake storage
@@ -160,7 +160,7 @@ class DocumentFileTest extends TestCase
     public function test_model_deletes_file_from_s3_on_deletion()
     {
         $file = DocumentFile::factory()->create([
-            'file_name' => 'test/file.pdf'
+            'file_name' => 'test/file.pdf',
         ]);
 
         // Create file in fake storage
@@ -177,7 +177,7 @@ class DocumentFileTest extends TestCase
     public function test_model_handles_missing_file_on_deletion()
     {
         $file = DocumentFile::factory()->create([
-            'file_name' => 'test/file.pdf'
+            'file_name' => 'test/file.pdf',
         ]);
 
         // File doesn't exist in storage
@@ -199,7 +199,7 @@ class DocumentFileTest extends TestCase
             'file_path' => 'https://example.com/test.pdf',
             'mime_type' => 'application/pdf',
             'file_size' => 1024,
-            'metadata' => ['description' => 'Test file']
+            'metadata' => ['description' => 'Test file'],
         ];
 
         $file = DocumentFile::factory()->create($data);

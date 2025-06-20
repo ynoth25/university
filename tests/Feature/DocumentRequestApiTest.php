@@ -5,9 +5,9 @@ namespace Tests\Feature;
 use App\Models\ApiKey;
 use App\Models\DocumentRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
 
 class DocumentRequestApiTest extends TestCase
 {
@@ -32,7 +32,7 @@ class DocumentRequestApiTest extends TestCase
             'contact_number' => '09123456789',
             'person_requesting_name' => 'John Doe',
             'request_for' => 'SF10',
-            'signature_url' => 'https://example.com/signature.jpg'
+            'signature_url' => 'https://example.com/signature.jpg',
         ];
     }
 
@@ -44,10 +44,10 @@ class DocumentRequestApiTest extends TestCase
         $response = $this->getJson('/api/v1/document-requests');
 
         $response->assertStatus(401)
-                ->assertJson([
-                    'success' => false,
-                    'message' => 'API key is required'
-                ]);
+            ->assertJson([
+                'success' => false,
+                'message' => 'API key is required',
+            ]);
     }
 
     /**
@@ -56,14 +56,14 @@ class DocumentRequestApiTest extends TestCase
     public function test_invalid_api_key_returns_401(): void
     {
         $response = $this->withHeaders([
-            'X-API-Key' => 'invalid-key'
+            'X-API-Key' => 'invalid-key',
         ])->getJson('/api/v1/document-requests');
 
         $response->assertStatus(401)
-                ->assertJson([
-                    'success' => false,
-                    'message' => 'Invalid or expired API key'
-                ]);
+            ->assertJson([
+                'success' => false,
+                'message' => 'Invalid or expired API key',
+            ]);
     }
 
     /**
@@ -72,37 +72,37 @@ class DocumentRequestApiTest extends TestCase
     public function test_can_create_document_request(): void
     {
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->postJson('/api/v1/document-requests', $this->validDocumentRequestData);
 
         $response->assertStatus(201)
-                ->assertJson([
-                    'success' => true,
-                    'message' => 'Document request created successfully'
-                ])
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'id',
-                        'request_id',
-                        'learning_reference_number',
-                        'name_of_student',
-                        'last_schoolyear_attended',
-                        'gender',
-                        'grade',
-                        'section',
-                        'major',
-                        'adviser',
-                        'contact_number',
-                        'person_requesting_name',
-                        'request_for',
-                        'signature_url',
-                        'status',
-                        'created_at',
-                        'updated_at'
-                    ],
-                    'message'
-                ]);
+            ->assertJson([
+                'success' => true,
+                'message' => 'Document request created successfully',
+            ])
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'id',
+                    'request_id',
+                    'learning_reference_number',
+                    'name_of_student',
+                    'last_schoolyear_attended',
+                    'gender',
+                    'grade',
+                    'section',
+                    'major',
+                    'adviser',
+                    'contact_number',
+                    'person_requesting_name',
+                    'request_for',
+                    'signature_url',
+                    'status',
+                    'created_at',
+                    'updated_at',
+                ],
+                'message',
+            ]);
 
         // Verify the request ID format
         $this->assertMatchesRegularExpression('/^DOC-\d{4}-[A-Z0-9]{8}$/', $response['data']['request_id']);
@@ -111,7 +111,7 @@ class DocumentRequestApiTest extends TestCase
         $this->assertDatabaseHas('document_requests', [
             'learning_reference_number' => '123456789',
             'name_of_student' => 'John Doe',
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
     }
 
@@ -121,23 +121,23 @@ class DocumentRequestApiTest extends TestCase
     public function test_validation_errors_for_required_fields(): void
     {
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->postJson('/api/v1/document-requests', []);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors([
-                    'learning_reference_number',
-                    'name_of_student',
-                    'last_schoolyear_attended',
-                    'gender',
-                    'grade',
-                    'section',
-                    'adviser',
-                    'contact_number',
-                    'person_requesting_name',
-                    'request_for',
-                    'signature_url'
-                ]);
+            ->assertJsonValidationErrors([
+                'learning_reference_number',
+                'name_of_student',
+                'last_schoolyear_attended',
+                'gender',
+                'grade',
+                'section',
+                'adviser',
+                'contact_number',
+                'person_requesting_name',
+                'request_for',
+                'signature_url',
+            ]);
     }
 
     /**
@@ -149,11 +149,11 @@ class DocumentRequestApiTest extends TestCase
         $data['gender'] = 'invalid';
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->postJson('/api/v1/document-requests', $data);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['gender']);
+            ->assertJsonValidationErrors(['gender']);
     }
 
     /**
@@ -165,11 +165,11 @@ class DocumentRequestApiTest extends TestCase
         $data['request_for'] = 'INVALID_TYPE';
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->postJson('/api/v1/document-requests', $data);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['request_for']);
+            ->assertJsonValidationErrors(['request_for']);
     }
 
     /**
@@ -181,27 +181,27 @@ class DocumentRequestApiTest extends TestCase
         DocumentRequest::factory()->count(3)->create();
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->getJson('/api/v1/document-requests');
 
         $response->assertStatus(200)
-                ->assertJson([
-                    'success' => true,
-                    'message' => 'Document requests retrieved successfully'
-                ])
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        '*' => [
-                            'id',
-                            'request_id',
-                            'name_of_student',
-                            'status',
-                            'created_at'
-                        ]
+            ->assertJson([
+                'success' => true,
+                'message' => 'Document requests retrieved successfully',
+            ])
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'request_id',
+                        'name_of_student',
+                        'status',
+                        'created_at',
                     ],
-                    'message'
-                ]);
+                ],
+                'message',
+            ]);
     }
 
     /**
@@ -215,7 +215,7 @@ class DocumentRequestApiTest extends TestCase
         DocumentRequest::factory()->create(['status' => 'completed']);
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->getJson('/api/v1/document-requests?status=pending');
 
         $response->assertStatus(200);
@@ -230,15 +230,15 @@ class DocumentRequestApiTest extends TestCase
     {
         DocumentRequest::factory()->create([
             'name_of_student' => 'John Doe',
-            'learning_reference_number' => '123456789'
+            'learning_reference_number' => '123456789',
         ]);
         DocumentRequest::factory()->create([
             'name_of_student' => 'Jane Smith',
-            'learning_reference_number' => '987654321'
+            'learning_reference_number' => '987654321',
         ]);
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->getJson('/api/v1/document-requests?search=John');
 
         $response->assertStatus(200);
@@ -254,17 +254,17 @@ class DocumentRequestApiTest extends TestCase
         $documentRequest = DocumentRequest::factory()->create();
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->getJson("/api/v1/document-requests/{$documentRequest->id}");
 
         $response->assertStatus(200)
-                ->assertJson([
-                    'success' => true,
-                    'data' => [
-                        'id' => $documentRequest->id,
-                        'request_id' => $documentRequest->request_id
-                    ]
-                ]);
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'id' => $documentRequest->id,
+                    'request_id' => $documentRequest->request_id,
+                ],
+            ]);
     }
 
     /**
@@ -275,17 +275,17 @@ class DocumentRequestApiTest extends TestCase
         $documentRequest = DocumentRequest::factory()->create();
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->getJson("/api/v1/document-requests/request/{$documentRequest->request_id}");
 
         $response->assertStatus(200)
-                ->assertJson([
-                    'success' => true,
-                    'data' => [
-                        'id' => $documentRequest->id,
-                        'request_id' => $documentRequest->request_id
-                    ]
-                ]);
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'id' => $documentRequest->id,
+                    'request_id' => $documentRequest->request_id,
+                ],
+            ]);
     }
 
     /**
@@ -294,14 +294,14 @@ class DocumentRequestApiTest extends TestCase
     public function test_returns_404_for_non_existent_document_request(): void
     {
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->getJson('/api/v1/document-requests/999');
 
         $response->assertStatus(404)
-                ->assertJson([
-                    'success' => false,
-                    'message' => 'Document request not found'
-                ]);
+            ->assertJson([
+                'success' => false,
+                'message' => 'Document request not found',
+            ]);
     }
 
     /**
@@ -314,18 +314,18 @@ class DocumentRequestApiTest extends TestCase
         $updateData['name_of_student'] = 'Jane Smith Updated';
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->putJson("/api/v1/document-requests/{$documentRequest->id}", $updateData);
 
         $response->assertStatus(200)
-                ->assertJson([
-                    'success' => true,
-                    'message' => 'Document request updated successfully'
-                ]);
+            ->assertJson([
+                'success' => true,
+                'message' => 'Document request updated successfully',
+            ]);
 
         $this->assertDatabaseHas('document_requests', [
             'id' => $documentRequest->id,
-            'name_of_student' => 'Jane Smith Updated'
+            'name_of_student' => 'Jane Smith Updated',
         ]);
     }
 
@@ -337,21 +337,21 @@ class DocumentRequestApiTest extends TestCase
         $documentRequest = DocumentRequest::factory()->create(['status' => 'pending']);
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->patchJson("/api/v1/document-requests/{$documentRequest->id}/status", [
             'status' => 'processing',
-            'remarks' => 'Document is being processed'
+            'remarks' => 'Document is being processed',
         ]);
 
         $response->assertStatus(200)
-                ->assertJson([
-                    'success' => true,
-                    'message' => 'Document request status updated successfully'
-                ]);
+            ->assertJson([
+                'success' => true,
+                'message' => 'Document request status updated successfully',
+            ]);
 
         $this->assertDatabaseHas('document_requests', [
             'id' => $documentRequest->id,
-            'status' => 'processing'
+            'status' => 'processing',
         ]);
     }
 
@@ -363,21 +363,21 @@ class DocumentRequestApiTest extends TestCase
         $documentRequest = DocumentRequest::factory()->create(['status' => 'processing']);
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->patchJson("/api/v1/document-requests/{$documentRequest->id}/status", [
             'status' => 'pickup',
-            'remarks' => 'Document is ready for pickup'
+            'remarks' => 'Document is ready for pickup',
         ]);
 
         $response->assertStatus(200)
-                ->assertJson([
-                    'success' => true,
-                    'message' => 'Document request status updated successfully'
-                ]);
+            ->assertJson([
+                'success' => true,
+                'message' => 'Document request status updated successfully',
+            ]);
 
         $this->assertDatabaseHas('document_requests', [
             'id' => $documentRequest->id,
-            'status' => 'pickup'
+            'status' => 'pickup',
         ]);
     }
 
@@ -389,16 +389,16 @@ class DocumentRequestApiTest extends TestCase
         $documentRequest = DocumentRequest::factory()->create(['status' => 'pending']);
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->patchJson("/api/v1/document-requests/{$documentRequest->id}/status", [
-            'status' => 'completed'
+            'status' => 'completed',
         ]);
 
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('document_requests', [
             'id' => $documentRequest->id,
-            'status' => 'completed'
+            'status' => 'completed',
         ]);
 
         $this->assertNotNull($documentRequest->fresh()->processed_at);
@@ -412,13 +412,13 @@ class DocumentRequestApiTest extends TestCase
         $documentRequest = DocumentRequest::factory()->create();
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->deleteJson("/api/v1/document-requests/{$documentRequest->id}");
 
         $response->assertStatus(204);
 
         $this->assertDatabaseMissing('document_requests', [
-            'id' => $documentRequest->id
+            'id' => $documentRequest->id,
         ]);
     }
 
@@ -434,31 +434,31 @@ class DocumentRequestApiTest extends TestCase
         DocumentRequest::factory()->create(['status' => 'completed']);
         DocumentRequest::factory()->create([
             'status' => 'pending',
-            'request_for' => 'SF10'
+            'request_for' => 'SF10',
         ]);
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->getJson('/api/v1/document-requests/statistics');
 
         $response->assertStatus(200)
-                ->assertJson([
-                    'success' => true,
-                    'message' => 'Statistics retrieved successfully'
-                ])
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'total',
-                        'pending',
-                        'processing',
-                        'pickup',
-                        'completed',
-                        'rejected',
-                        'by_type'
-                    ],
-                    'message'
-                ]);
+            ->assertJson([
+                'success' => true,
+                'message' => 'Statistics retrieved successfully',
+            ])
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'total',
+                    'pending',
+                    'processing',
+                    'pickup',
+                    'completed',
+                    'rejected',
+                    'by_type',
+                ],
+                'message',
+            ]);
 
         $this->assertEquals(5, $response['data']['total']);
         $this->assertEquals(2, $response['data']['pending']);
@@ -475,7 +475,7 @@ class DocumentRequestApiTest extends TestCase
         DocumentRequest::factory()->count(25)->create();
 
         $response = $this->withHeaders([
-            'X-API-Key' => $this->getTestApiKey()->key
+            'X-API-Key' => $this->getTestApiKey()->key,
         ])->getJson('/api/v1/document-requests?per_page=10&page=1');
 
         $response->assertStatus(200);
@@ -491,7 +491,7 @@ class DocumentRequestApiTest extends TestCase
         $this->assertNull($apiKey->last_used_at);
 
         $this->withHeaders([
-            'X-API-Key' => $apiKey->key
+            'X-API-Key' => $apiKey->key,
         ])->getJson('/api/v1/document-requests');
 
         $apiKey->refresh();
@@ -505,15 +505,15 @@ class DocumentRequestApiTest extends TestCase
     {
         // Create a document request first
         $documentRequest = DocumentRequest::factory()->create([
-            'person_requesting_name' => 'John Doe'
+            'person_requesting_name' => 'John Doe',
         ]);
 
         // Debug: Check if the person_requesting_name was set correctly
         $this->assertEquals('John Doe', $documentRequest->getAttributes()['person_requesting_name']);
-        
+
         // Debug: Print the raw attributes
-        echo "Raw attributes: " . print_r($documentRequest->getAttributes(), true) . "\n";
-        echo "Person requesting name: " . $documentRequest->person_requesting_name . "\n";
+        echo 'Raw attributes: '.print_r($documentRequest->getAttributes(), true)."\n";
+        echo 'Person requesting name: '.$documentRequest->person_requesting_name."\n";
 
         $apiKey = ApiKey::factory()->create(['is_active' => true]);
 
@@ -521,24 +521,24 @@ class DocumentRequestApiTest extends TestCase
         Storage::fake('s3');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $apiKey->key,
+            'Authorization' => 'Bearer '.$apiKey->key,
             'Accept' => 'application/json',
         ])->postJson("/api/v1/document-requests/{$documentRequest->id}/files/upload", [
             'file_type' => 'signature',
-            'file' => UploadedFile::fake()->image('signature.png', 100, 100)
+            'file' => UploadedFile::fake()->image('signature.png', 100, 100),
         ]);
 
         $response->assertStatus(201);
 
         // Check that the filename contains the requestor name
         $uploadedFile = $response->json('data');
-        
+
         // Debug: Print the actual filename
-        echo "Actual filename: " . $uploadedFile['file_name'] . "\n";
+        echo 'Actual filename: '.$uploadedFile['file_name']."\n";
         echo "Expected to contain: John_Doe\n";
-        echo "Request ID: " . $documentRequest->request_id . "\n";
-        echo "Full response data: " . print_r($uploadedFile, true) . "\n";
-        
+        echo 'Request ID: '.$documentRequest->request_id."\n";
+        echo 'Full response data: '.print_r($uploadedFile, true)."\n";
+
         // Remove debug output
         $this->assertStringContainsString('John_Doe', $uploadedFile['file_name']);
         $this->assertStringContainsString($documentRequest->request_id, $uploadedFile['file_name']);

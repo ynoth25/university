@@ -56,7 +56,7 @@ class DocumentRequestRequest extends FormRequest
             'contact_number.required' => 'Contact number is required.',
             'person_requesting_name.required' => 'Person requesting name is required.',
             'request_for.required' => 'Document type is required.',
-            'request_for.in' => 'Document type must be one of: SF10, ENROLLMENT_CERT, ' .
+            'request_for.in' => 'Document type must be one of: SF10, ENROLLMENT_CERT, '.
                 'DIPLOMA, CAV, ENG. INST., CERT OF GRAD, OTHERS.',
             'signature_url.required' => 'Signature URL is required.',
             'signature_url.url' => 'Signature must be a valid URL.',

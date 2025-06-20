@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
@@ -14,10 +12,10 @@ return new class extends Migration
     {
         // Migrate existing data from person_requesting JSON to individual columns
         $documentRequests = DB::table('document_requests')->get();
-        
+
         foreach ($documentRequests as $request) {
             $personRequesting = json_decode($request->person_requesting, true);
-            
+
             if ($personRequesting) {
                 DB::table('document_requests')
                     ->where('id', $request->id)
@@ -37,14 +35,14 @@ return new class extends Migration
     {
         // Migrate data back to JSON format
         $documentRequests = DB::table('document_requests')->get();
-        
+
         foreach ($documentRequests as $request) {
             $personRequesting = [
                 'name' => $request->person_requesting_name,
                 'request_for' => $request->request_for,
                 'signature' => $request->signature_url,
             ];
-            
+
             DB::table('document_requests')
                 ->where('id', $request->id)
                 ->update([

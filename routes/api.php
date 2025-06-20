@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\DocumentRequestController;
 use App\Http\Controllers\Api\FileUploadController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +27,7 @@ Route::prefix('v1')->group(function () {
         return response()->json([
             'status' => 'success',
             'message' => 'API is running',
-            'timestamp' => now()->toISOString()
+            'timestamp' => now()->toISOString(),
         ]);
     });
 
@@ -36,10 +36,10 @@ Route::prefix('v1')->group(function () {
         // Additional routes (must come before apiResource to avoid conflicts)
         Route::get('/document-requests/statistics', [DocumentRequestController::class, 'statistics']);
         Route::get('/document-requests/request/{requestId}', [DocumentRequestController::class, 'showByRequestId']);
-        
+
         // CRUD operations
         Route::apiResource('document-requests', DocumentRequestController::class);
-        
+
         // Status update route
         Route::patch('/document-requests/{id}/status', [DocumentRequestController::class, 'updateStatus']);
 
@@ -48,7 +48,7 @@ Route::prefix('v1')->group(function () {
             // Upload routes
             Route::post('/upload', [FileUploadController::class, 'upload']);
             Route::post('/upload-multiple', [FileUploadController::class, 'uploadMultiple']);
-            
+
             // File management routes
             Route::get('/', [FileUploadController::class, 'getFiles']);
             Route::get('/type/{fileType}', [FileUploadController::class, 'getFilesByType']);
@@ -61,4 +61,4 @@ Route::prefix('v1')->group(function () {
         // File type information
         Route::get('/file-types', [FileUploadController::class, 'getAllowedFileTypes']);
     });
-}); 
+});

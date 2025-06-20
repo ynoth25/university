@@ -33,7 +33,7 @@ class ApiKey extends Model
      */
     public static function generateKey(): string
     {
-        return 'sk-' . Str::random(32);
+        return 'sk-'.Str::random(32);
     }
 
     /**
@@ -53,7 +53,7 @@ class ApiKey extends Model
      */
     public function isValid(): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 

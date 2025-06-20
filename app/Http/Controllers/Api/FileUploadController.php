@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Api\BaseController;
-use App\Models\DocumentFile;
 use App\Models\DocumentRequest;
 use App\Services\FileUploadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Validator;
 
 class FileUploadController extends BaseController
@@ -28,14 +25,14 @@ class FileUploadController extends BaseController
         try {
             // Find the document request
             $documentRequest = DocumentRequest::find((int) $documentRequestId);
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 
             // Validate request
             $validator = Validator::make($request->all(), [
                 'file' => 'required|file',
-                'file_type' => 'required|string|in:' . implode(',', FileUploadService::getAllowedFileTypes()),
+                'file_type' => 'required|string|in:'.implode(',', FileUploadService::getAllowedFileTypes()),
             ]);
 
             if ($validator->fails()) {
@@ -47,7 +44,7 @@ class FileUploadController extends BaseController
 
             // Validate file using service
             $validationErrors = $this->fileUploadService->validateFile($file, $fileType);
-            if (!empty($validationErrors)) {
+            if (! empty($validationErrors)) {
                 return $this->sendError('File validation failed', ['errors' => $validationErrors], 422);
             }
 
@@ -66,7 +63,7 @@ class FileUploadController extends BaseController
                 'uploaded_at' => $documentFile->created_at,
             ], 'File uploaded successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Error uploading file: ' . $e->getMessage(), [], 500);
+            return $this->sendError('Error uploading file: '.$e->getMessage(), [], 500);
         }
     }
 
@@ -78,7 +75,7 @@ class FileUploadController extends BaseController
         try {
             // Find the document request
             $documentRequest = DocumentRequest::find((int) $documentRequestId);
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 
@@ -86,7 +83,7 @@ class FileUploadController extends BaseController
             $validator = Validator::make($request->all(), [
                 'files' => 'required|array|min:1',
                 'files.*' => 'required|file',
-                'file_type' => 'required|string|in:' . implode(',', FileUploadService::getAllowedFileTypes()),
+                'file_type' => 'required|string|in:'.implode(',', FileUploadService::getAllowedFileTypes()),
             ]);
 
             if ($validator->fails()) {
@@ -102,11 +99,11 @@ class FileUploadController extends BaseController
 
             foreach ($files as $index => $file) {
                 $validationErrors = $this->fileUploadService->validateFile($file, $fileType);
-                if (!empty($validationErrors)) {
+                if (! empty($validationErrors)) {
                     $errors[] = [
                         'file_index' => $index,
                         'file_name' => $file->getClientOriginalName(),
-                        'errors' => $validationErrors
+                        'errors' => $validationErrors,
                     ];
                 } else {
                     try {
@@ -126,7 +123,7 @@ class FileUploadController extends BaseController
                         $errors[] = [
                             'file_index' => $index,
                             'file_name' => $file->getClientOriginalName(),
-                            'errors' => [$e->getMessage()]
+                            'errors' => [$e->getMessage()],
                         ];
                     }
                 }
@@ -138,14 +135,15 @@ class FileUploadController extends BaseController
                 'total_files' => count($files),
             ];
 
-            if (!empty($errors)) {
+            if (! empty($errors)) {
                 $response['errors'] = $errors;
+
                 return $this->sendResponse($response, 'Some files uploaded successfully, but some failed');
             }
 
             return $this->sendCreated($response, 'All files uploaded successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Error uploading files: ' . $e->getMessage(), [], 500);
+            return $this->sendError('Error uploading files: '.$e->getMessage(), [], 500);
         }
     }
 
@@ -157,7 +155,7 @@ class FileUploadController extends BaseController
         try {
             // Find the document request
             $documentRequest = DocumentRequest::find((int) $documentRequestId);
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 
@@ -182,7 +180,7 @@ class FileUploadController extends BaseController
                 'file_types' => $files->groupBy('file_type')->map->count(),
             ], 'Files retrieved successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Error retrieving files: ' . $e->getMessage(), [], 500);
+            return $this->sendError('Error retrieving files: '.$e->getMessage(), [], 500);
         }
     }
 
@@ -194,7 +192,7 @@ class FileUploadController extends BaseController
         try {
             // Find the document request
             $documentRequest = DocumentRequest::find((int) $documentRequestId);
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 
@@ -219,7 +217,7 @@ class FileUploadController extends BaseController
                 'total_files' => $files->count(),
             ], 'Files retrieved successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Error retrieving files: ' . $e->getMessage(), [], 500);
+            return $this->sendError('Error retrieving files: '.$e->getMessage(), [], 500);
         }
     }
 
@@ -231,13 +229,13 @@ class FileUploadController extends BaseController
         try {
             // Find the document request
             $documentRequest = DocumentRequest::find((int) $documentRequestId);
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 
             // Find the file
             $documentFile = $documentRequest->files()->find($fileId);
-            if (!$documentFile) {
+            if (! $documentFile) {
                 return $this->sendError('File not found', [], 404);
             }
 
@@ -251,7 +249,7 @@ class FileUploadController extends BaseController
 
             return $this->sendDeleted('File deleted successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Error deleting file: ' . $e->getMessage(), [], 500);
+            return $this->sendError('Error deleting file: '.$e->getMessage(), [], 500);
         }
     }
 
@@ -263,13 +261,13 @@ class FileUploadController extends BaseController
         try {
             // Find the document request
             $documentRequest = DocumentRequest::find((int) $documentRequestId);
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 
             // Find the file
             $documentFile = $documentRequest->files()->find($fileId);
-            if (!$documentFile) {
+            if (! $documentFile) {
                 return $this->sendError('File not found', [], 404);
             }
 
@@ -284,7 +282,7 @@ class FileUploadController extends BaseController
 
             // Update metadata
             $documentFile->update([
-                'metadata' => array_merge($documentFile->metadata ?? [], $request->input('metadata'))
+                'metadata' => array_merge($documentFile->metadata ?? [], $request->input('metadata')),
             ]);
 
             return $this->sendUpdated([
@@ -294,7 +292,7 @@ class FileUploadController extends BaseController
                 'metadata' => $documentFile->metadata,
             ], 'File metadata updated successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Error updating file metadata: ' . $e->getMessage(), [], 500);
+            return $this->sendError('Error updating file metadata: '.$e->getMessage(), [], 500);
         }
     }
 
@@ -306,13 +304,13 @@ class FileUploadController extends BaseController
         try {
             // Find the document request
             $documentRequest = DocumentRequest::find((int) $documentRequestId);
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 
             // Find the file
             $documentFile = $documentRequest->files()->find($fileId);
-            if (!$documentFile) {
+            if (! $documentFile) {
                 return $this->sendError('File not found', [], 404);
             }
 
@@ -329,7 +327,7 @@ class FileUploadController extends BaseController
 
             // Validate file using service
             $validationErrors = $this->fileUploadService->validateFile($file, $documentFile->file_type);
-            if (!empty($validationErrors)) {
+            if (! empty($validationErrors)) {
                 return $this->sendError('File validation failed', ['errors' => $validationErrors], 422);
             }
 
@@ -348,7 +346,7 @@ class FileUploadController extends BaseController
                 'updated_at' => $updatedFile->updated_at,
             ], 'File updated successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Error updating file: ' . $e->getMessage(), [], 500);
+            return $this->sendError('Error updating file: '.$e->getMessage(), [], 500);
         }
     }
 
@@ -360,13 +358,13 @@ class FileUploadController extends BaseController
         try {
             // Find the document request
             $documentRequest = DocumentRequest::find((int) $documentRequestId);
-            if (!$documentRequest) {
+            if (! $documentRequest) {
                 return $this->sendError('Document request not found', [], 404);
             }
 
             // Find the file
             $documentFile = $documentRequest->files()->find($fileId);
-            if (!$documentFile) {
+            if (! $documentFile) {
                 return $this->sendError('File not found', [], 404);
             }
 
@@ -385,7 +383,7 @@ class FileUploadController extends BaseController
                 'exists_in_s3' => $documentFile->exists(),
             ], 'File information retrieved successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Error retrieving file information: ' . $e->getMessage(), [], 500);
+            return $this->sendError('Error retrieving file information: '.$e->getMessage(), [], 500);
         }
     }
 
@@ -422,7 +420,7 @@ class FileUploadController extends BaseController
                 'allowed_extensions' => $allowedExtensions,
             ], 'Allowed file types retrieved successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Error retrieving file types: ' . $e->getMessage(), [], 500);
+            return $this->sendError('Error retrieving file types: '.$e->getMessage(), [], 500);
         }
     }
 
@@ -454,6 +452,6 @@ class FileUploadController extends BaseController
             $bytes /= 1024;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 }

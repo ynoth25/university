@@ -4,10 +4,10 @@ namespace App\Services;
 
 use App\Models\DocumentFile;
 use App\Models\DocumentRequest;
+use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Exception;
 
 class FileUploadService
 {
@@ -23,7 +23,7 @@ class FileUploadService
                 'image/gif',
                 'application/pdf',
             ],
-            'folder' => 'signatures'
+            'folder' => 'signatures',
         ],
         'affidavit_of_loss' => [
             'max_size' => 10 * 1024 * 1024, // 10MB
@@ -32,7 +32,7 @@ class FileUploadService
                 'image/jpeg',
                 'image/png',
             ],
-            'folder' => 'supporting_documents'
+            'folder' => 'supporting_documents',
         ],
         'birth_certificate' => [
             'max_size' => 10 * 1024 * 1024, // 10MB
@@ -41,7 +41,7 @@ class FileUploadService
                 'image/jpeg',
                 'image/png',
             ],
-            'folder' => 'supporting_documents'
+            'folder' => 'supporting_documents',
         ],
         'valid_id' => [
             'max_size' => 10 * 1024 * 1024, // 10MB
@@ -50,7 +50,7 @@ class FileUploadService
                 'image/jpeg',
                 'image/png',
             ],
-            'folder' => 'supporting_documents'
+            'folder' => 'supporting_documents',
         ],
         'transcript_of_records' => [
             'max_size' => 15 * 1024 * 1024, // 15MB
@@ -59,7 +59,7 @@ class FileUploadService
                 'image/jpeg',
                 'image/png',
             ],
-            'folder' => 'supporting_documents'
+            'folder' => 'supporting_documents',
         ],
         'other' => [
             'max_size' => 10 * 1024 * 1024, // 10MB
@@ -70,8 +70,8 @@ class FileUploadService
                 'application/msword',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ],
-            'folder' => 'supporting_documents'
-        ]
+            'folder' => 'supporting_documents',
+        ],
     ];
 
     /**
@@ -80,7 +80,7 @@ class FileUploadService
     public function uploadFile(UploadedFile $file, DocumentRequest $documentRequest, string $fileType): DocumentFile
     {
         // Validate file type
-        if (!array_key_exists($fileType, self::ALLOWED_FILE_TYPES)) {
+        if (! array_key_exists($fileType, self::ALLOWED_FILE_TYPES)) {
             throw new Exception("Invalid file type: {$fileType}");
         }
 
@@ -88,18 +88,18 @@ class FileUploadService
 
         // Validate file size
         if ($file->getSize() > $config['max_size']) {
-            throw new Exception("File size exceeds maximum allowed size of " . $this->formatBytes($config['max_size']));
+            throw new Exception('File size exceeds maximum allowed size of '.$this->formatBytes($config['max_size']));
         }
 
         // Validate MIME type
-        if (!in_array($file->getMimeType(), $config['allowed_mimes'])) {
+        if (! in_array($file->getMimeType(), $config['allowed_mimes'])) {
             $allowedTypesArray = $config['allowed_mimes'];
             $errorLines = [
                 'File type not allowed.',
                 'Allowed types:',
             ];
             foreach ($allowedTypesArray as $type) {
-                $errorLines[] = '    ' . $type;
+                $errorLines[] = '    '.$type;
             }
             $message = implode(
                 PHP_EOL,
@@ -110,7 +110,7 @@ class FileUploadService
 
         // Generate unique filename
         $fileName = $this->generateFileName($file, $fileType, $documentRequest);
-        $filePath = $config['folder'] . '/' . $fileName;
+        $filePath = $config['folder'].'/'.$fileName;
 
         // Upload to S3
         try {
@@ -118,14 +118,14 @@ class FileUploadService
             $fileContent = file_get_contents($file->getRealPath());
             $uploadSuccess = Storage::disk('s3')->put($filePath, $fileContent);
 
-            if (!$uploadSuccess) {
+            if (! $uploadSuccess) {
                 throw new Exception('Failed to upload file to S3 - put returned false');
             }
         } catch (Exception $e) {
-            \Log::error('S3 Upload Error: ' . $e->getMessage());
-            \Log::error('File: ' . $fileName);
-            \Log::error('Folder: ' . $config['folder']);
-            throw new Exception('Failed to upload file to S3: ' . $e->getMessage());
+            \Log::error('S3 Upload Error: '.$e->getMessage());
+            \Log::error('File: '.$fileName);
+            \Log::error('Folder: '.$config['folder']);
+            throw new Exception('Failed to upload file to S3: '.$e->getMessage());
         }
 
         // Get the public URL
@@ -177,10 +177,12 @@ class FileUploadService
                 // Delete from database
                 return $documentFile->delete();
             }
+
             return false;
         } catch (Exception $e) {
             // Log error but don't throw
-            \Log::error('Failed to delete file: ' . $e->getMessage());
+            \Log::error('Failed to delete file: '.$e->getMessage());
+
             return false;
         }
     }
@@ -212,17 +214,17 @@ class FileUploadService
             // Use getAttribute to get the raw database value, bypassing the accessor
             $name = $documentRequest->getAttribute('person_requesting_name') ?? 'unknown';
             $requestorName = $this->sanitizeFileName($name);
-            
+
             // Debug logging
-            \Log::info("FileUploadService: Generating filename", [
+            \Log::info('FileUploadService: Generating filename', [
                 'request_id' => $documentRequest->request_id,
                 'person_requesting_name' => $documentRequest->getAttribute('person_requesting_name'),
-                'sanitized_name' => $requestorName
+                'sanitized_name' => $requestorName,
             ]);
-            
+
             // Add debug output for immediate visibility
-            echo "DEBUG - Raw name: " . $name . "\n";
-            echo "DEBUG - Sanitized name: " . $requestorName . "\n";
+            echo 'DEBUG - Raw name: '.$name."\n";
+            echo 'DEBUG - Sanitized name: '.$requestorName."\n";
         }
 
         // Remove debug output
@@ -254,7 +256,7 @@ class FileUploadService
             $bytes /= 1024;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 
     /**
@@ -280,25 +282,26 @@ class FileUploadService
     {
         $errors = [];
 
-        if (!array_key_exists($fileType, self::ALLOWED_FILE_TYPES)) {
+        if (! array_key_exists($fileType, self::ALLOWED_FILE_TYPES)) {
             $errors[] = "Invalid file type: {$fileType}";
+
             return $errors;
         }
 
         $config = self::ALLOWED_FILE_TYPES[$fileType];
 
         if ($file->getSize() > $config['max_size']) {
-            $errors[] = "File size exceeds maximum allowed size of " . $this->formatBytes($config['max_size']);
+            $errors[] = 'File size exceeds maximum allowed size of '.$this->formatBytes($config['max_size']);
         }
 
-        if (!in_array($file->getMimeType(), $config['allowed_mimes'])) {
+        if (! in_array($file->getMimeType(), $config['allowed_mimes'])) {
             $allowedTypesArray = $config['allowed_mimes'];
             $errorLines = [
                 'File type not allowed.',
                 'Allowed types:',
             ];
             foreach ($allowedTypesArray as $type) {
-                $errorLines[] = '    ' . $type;
+                $errorLines[] = '    '.$type;
             }
             $errorMsg = implode(
                 PHP_EOL,

@@ -33,13 +33,13 @@ class CreateApiKey extends Command
             $apiKey = ApiKey::createKey($name, $expiresAt);
 
             $this->info('API Key created successfully!');
-            $this->line('Name: ' . $apiKey->name);
-            $this->line('Key: ' . $apiKey->key);
-            $this->line('Expires: ' . ($apiKey->expires_at ? $apiKey->expires_at->format('Y-m-d H:i:s') : 'Never'));
+            $this->line('Name: '.$apiKey->name);
+            $this->line('Key: '.$apiKey->key);
+            $this->line('Expires: '.($apiKey->expires_at ? $apiKey->expires_at->format('Y-m-d H:i:s') : 'Never'));
 
             $this->warn('Please save this key securely. It will not be shown again.');
         } catch (\Exception $e) {
-            $this->error('Failed to create API key: ' . $e->getMessage());
+            $this->error('Failed to create API key: '.$e->getMessage());
         }
     }
 }

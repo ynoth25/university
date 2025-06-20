@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\Middleware;
 
-use Tests\TestCase;
 use App\Http\Middleware\ApiKeyMiddleware;
 use App\Models\ApiKey;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Tests\TestCase;
 
 class ApiKeyMiddlewareTest extends TestCase
 {
@@ -19,7 +19,7 @@ class ApiKeyMiddlewareTest extends TestCase
         $request = Request::create('/api/test', 'GET');
         $request->headers->set('X-API-Key', $apiKey->key);
 
-        $middleware = new ApiKeyMiddleware();
+        $middleware = new ApiKeyMiddleware;
         $response = $middleware->handle($request, function ($request) {
             return new Response('OK');
         });
@@ -31,7 +31,7 @@ class ApiKeyMiddlewareTest extends TestCase
     {
         $request = Request::create('/api/test', 'GET');
 
-        $middleware = new ApiKeyMiddleware();
+        $middleware = new ApiKeyMiddleware;
         $response = $middleware->handle($request, function ($request) {
             return new Response('OK');
         });
@@ -45,7 +45,7 @@ class ApiKeyMiddlewareTest extends TestCase
         $request = Request::create('/api/test', 'GET');
         $request->headers->set('X-API-Key', 'invalid-key');
 
-        $middleware = new ApiKeyMiddleware();
+        $middleware = new ApiKeyMiddleware;
         $response = $middleware->handle($request, function ($request) {
             return new Response('OK');
         });
@@ -60,7 +60,7 @@ class ApiKeyMiddlewareTest extends TestCase
         $request = Request::create('/api/test', 'GET');
         $request->headers->set('X-API-Key', $apiKey->key);
 
-        $middleware = new ApiKeyMiddleware();
+        $middleware = new ApiKeyMiddleware;
         $response = $middleware->handle($request, function ($request) {
             return new Response('OK');
         });
@@ -73,12 +73,12 @@ class ApiKeyMiddlewareTest extends TestCase
     {
         $apiKey = ApiKey::factory()->create([
             'is_active' => true,
-            'expires_at' => now()->subDay()
+            'expires_at' => now()->subDay(),
         ]);
         $request = Request::create('/api/test', 'GET');
         $request->headers->set('X-API-Key', $apiKey->key);
 
-        $middleware = new ApiKeyMiddleware();
+        $middleware = new ApiKeyMiddleware;
         $response = $middleware->handle($request, function ($request) {
             return new Response('OK');
         });
@@ -91,12 +91,12 @@ class ApiKeyMiddlewareTest extends TestCase
     {
         $apiKey = ApiKey::factory()->create([
             'is_active' => true,
-            'last_used_at' => now()->subDay()
+            'last_used_at' => now()->subDay(),
         ]);
         $request = Request::create('/api/test', 'GET');
         $request->headers->set('X-API-Key', $apiKey->key);
 
-        $middleware = new ApiKeyMiddleware();
+        $middleware = new ApiKeyMiddleware;
         $response = $middleware->handle($request, function ($request) {
             return new Response('OK');
         });
@@ -114,7 +114,7 @@ class ApiKeyMiddlewareTest extends TestCase
         $request = Request::create('/api/test', 'GET');
         $request->headers->set('x-api-key', $apiKey->key);
 
-        $middleware = new ApiKeyMiddleware();
+        $middleware = new ApiKeyMiddleware;
         $response = $middleware->handle($request, function ($request) {
             return new Response('OK');
         });

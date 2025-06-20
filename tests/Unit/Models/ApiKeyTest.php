@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Models;
 
-use Tests\TestCase;
 use App\Models\ApiKey;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ApiKeyTest extends TestCase
 {
@@ -85,7 +85,7 @@ class ApiKeyTest extends TestCase
     {
         $apiKey = ApiKey::factory()->create([
             'is_active' => true,
-            'expires_at' => now()->addDay()
+            'expires_at' => now()->addDay(),
         ]);
 
         $this->assertTrue($apiKey->isValid());
@@ -102,7 +102,7 @@ class ApiKeyTest extends TestCase
     {
         $apiKey = ApiKey::factory()->create([
             'is_active' => true,
-            'expires_at' => now()->subDay()
+            'expires_at' => now()->subDay(),
         ]);
 
         $this->assertFalse($apiKey->isValid());
@@ -112,7 +112,7 @@ class ApiKeyTest extends TestCase
     {
         $apiKey = ApiKey::factory()->create([
             'is_active' => true,
-            'expires_at' => null
+            'expires_at' => null,
         ]);
 
         $this->assertTrue($apiKey->isValid());

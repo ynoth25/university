@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DocumentRequest extends Model
 {
@@ -62,7 +62,7 @@ class DocumentRequest extends Model
     public static function generateRequestId(): string
     {
         do {
-            $requestId = 'DOC-' . date('Y') . '-' . strtoupper(Str::random(8));
+            $requestId = 'DOC-'.date('Y').'-'.strtoupper(Str::random(8));
         } while (self::where('request_id', $requestId)->exists());
 
         return $requestId;
@@ -122,9 +122,10 @@ class DocumentRequest extends Model
     public function getSignatureUrlAttribute(): string
     {
         $signatureFile = $this->signatureFile();
-        if ($signatureFile && !empty($signatureFile->url)) {
+        if ($signatureFile && ! empty($signatureFile->url)) {
             return $signatureFile->url;
         }
+
         return $this->attributes['signature_url'] ?? '';
     }
 
@@ -171,10 +172,11 @@ class DocumentRequest extends Model
     public function delete()
     {
         // Ensure the files relationship is loaded
-        if (!$this->relationLoaded('files')) {
+        if (! $this->relationLoaded('files')) {
             $this->load('files');
         }
         $this->files->each->delete();
+
         return parent::delete();
     }
 }

@@ -23,7 +23,7 @@ class ApiKeyMiddleware
             $apiKey = substr($apiKey, 7);
         }
 
-        if (!$apiKey) {
+        if (! $apiKey) {
             return response()->json([
                 'success' => false,
                 'message' => 'API key is required',
@@ -32,7 +32,7 @@ class ApiKeyMiddleware
 
         $key = ApiKey::findByKey($apiKey);
 
-        if (!$key || !$key->isValid()) {
+        if (! $key || ! $key->isValid()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid or expired API key',

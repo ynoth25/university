@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\DocumentFile;
 use App\Models\DocumentRequest;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,7 +19,7 @@ class DocumentFileFactory extends Factory
     {
         $fileTypes = ['signature', 'affidavit_of_loss', 'birth_certificate', 'valid_id', 'transcript_of_records', 'other'];
         $fileType = $this->faker->randomElement($fileTypes);
-        
+
         $mimeTypes = [
             'signature' => ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'],
             'affidavit_of_loss' => ['application/pdf', 'image/jpeg', 'image/png'],
@@ -29,17 +28,17 @@ class DocumentFileFactory extends Factory
             'transcript_of_records' => ['application/pdf', 'image/jpeg', 'image/png'],
             'other' => ['application/pdf', 'image/jpeg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
         ];
-        
+
         $mimeType = $this->faker->randomElement($mimeTypes[$fileType]);
         $extension = $this->getExtensionFromMimeType($mimeType);
         $fileName = $this->generateFileName($fileType, $extension);
-        
+
         return [
             'document_request_id' => DocumentRequest::factory(),
             'file_type' => $fileType,
-            'original_name' => $this->faker->words(2, true) . '.' . $extension,
+            'original_name' => $this->faker->words(2, true).'.'.$extension,
             'file_name' => $fileName,
-            'file_path' => 'https://s3.amazonaws.com/test-bucket/' . $fileName,
+            'file_path' => 'https://s3.amazonaws.com/test-bucket/'.$fileName,
             'mime_type' => $mimeType,
             'file_size' => $this->faker->numberBetween(1024, 10 * 1024 * 1024), // 1KB to 10MB
             'metadata' => [
@@ -138,15 +137,15 @@ class DocumentFileFactory extends Factory
      */
     private function generateFileName(string $fileType, string $extension): string
     {
-        $requestId = 'DOC-' . date('Y') . '-' . strtoupper($this->faker->regexify('[A-Z0-9]{8}'));
+        $requestId = 'DOC-'.date('Y').'-'.strtoupper($this->faker->regexify('[A-Z0-9]{8}'));
         $timestamp = $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d_H-i-s');
         $randomString = strtoupper($this->faker->regexify('[A-Z0-9]{8}'));
-        
+
         // Generate a realistic requestor name
         $requestorName = $this->sanitizeFileName($this->faker->name());
-        
+
         $folder = $fileType === 'signature' ? 'signatures' : 'supporting_documents';
-        
+
         return "{$folder}/{$requestId}_{$requestorName}_{$fileType}_{$timestamp}_{$randomString}.{$extension}";
     }
 
@@ -158,7 +157,7 @@ class DocumentFileFactory extends Factory
         // Remove special characters and replace spaces with underscores
         $sanitized = preg_replace('/[^a-zA-Z0-9\s]/', '', $name);
         $sanitized = preg_replace('/\s+/', '_', trim($sanitized));
-        
+
         // Limit length to 50 characters
         return substr($sanitized, 0, 50);
     }
@@ -176,7 +175,7 @@ class DocumentFileFactory extends Factory
             'application/msword' => 'doc',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
         ];
-        
+
         return $extensions[$mimeType] ?? 'pdf';
     }
 }

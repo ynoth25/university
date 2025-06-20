@@ -11,15 +11,13 @@ class BaseController extends Controller
     /**
      * Success response method.
      *
-     * @param mixed $result
-     * @param string $message
-     * @return JsonResponse
+     * @param  mixed  $result
      */
     public function sendResponse($result, string $message = ''): JsonResponse
     {
         $response = [
             'success' => true,
-            'data'    => $result,
+            'data' => $result,
             'message' => $message,
         ];
 
@@ -29,10 +27,7 @@ class BaseController extends Controller
     /**
      * Error response method.
      *
-     * @param string $error
-     * @param array|MessageBag $errorMessages
-     * @param int $code
-     * @return JsonResponse
+     * @param  array|MessageBag  $errorMessages
      */
     public function sendError(string $error, $errorMessages = [], int $code = 404): JsonResponse
     {
@@ -41,7 +36,7 @@ class BaseController extends Controller
             'message' => $error,
         ];
 
-        if (!empty($errorMessages)) {
+        if (! empty($errorMessages)) {
             // Convert MessageBag to array if needed
             if ($errorMessages instanceof \Illuminate\Support\MessageBag) {
                 $response['data'] = $errorMessages->toArray();
@@ -56,9 +51,7 @@ class BaseController extends Controller
     /**
      * Success response method for created resources.
      *
-     * @param mixed $result
-     * @param string $message
-     * @return JsonResponse
+     * @param  mixed  $result
      */
     public function sendCreated($result, string $message = 'Resource created successfully'): JsonResponse
     {
@@ -68,9 +61,7 @@ class BaseController extends Controller
     /**
      * Success response method for updated resources.
      *
-     * @param mixed $result
-     * @param string $message
-     * @return JsonResponse
+     * @param  mixed  $result
      */
     public function sendUpdated($result, string $message = 'Resource updated successfully'): JsonResponse
     {
@@ -79,9 +70,6 @@ class BaseController extends Controller
 
     /**
      * Success response method for deleted resources.
-     *
-     * @param string $message
-     * @return JsonResponse
      */
     public function sendDeleted(string $message = 'Resource deleted successfully'): JsonResponse
     {

@@ -90,7 +90,7 @@ class ExampleTest extends TestCase
         $documentRequest = DocumentRequest::factory()->create([
             'person_requesting_name' => 'John Doe',
             'request_for' => 'ENROLLMENT_CERT',
-            'signature_url' => 'https://example.com/signature.jpg'
+            'signature_url' => 'https://example.com/signature.jpg',
         ]);
 
         $this->assertEquals('John Doe', $documentRequest->person_requesting_name);
@@ -101,7 +101,7 @@ class ExampleTest extends TestCase
     public function test_document_request_signature_url()
     {
         $documentRequest = DocumentRequest::factory()->create([
-            'signature_url' => null
+            'signature_url' => null,
         ]);
 
         // No signature file exists
@@ -111,7 +111,7 @@ class ExampleTest extends TestCase
         $signatureFile = DocumentFile::factory()->create([
             'document_request_id' => $documentRequest->id,
             'file_type' => 'signature',
-            'file_path' => 'signatures/test.jpg'
+            'file_path' => 'signatures/test.jpg',
         ]);
 
         $this->assertEquals($signatureFile->url, $documentRequest->signature_url);
@@ -124,12 +124,12 @@ class ExampleTest extends TestCase
         // Create different types of files
         $signatureFile = DocumentFile::factory()->create([
             'document_request_id' => $documentRequest->id,
-            'file_type' => 'signature'
+            'file_type' => 'signature',
         ]);
 
         $documentFile = DocumentFile::factory()->create([
             'document_request_id' => $documentRequest->id,
-            'file_type' => 'transcript_of_records'
+            'file_type' => 'transcript_of_records',
         ]);
 
         $this->assertEquals($signatureFile->id, $documentRequest->signatureFile()->id);

@@ -2,13 +2,13 @@
 
 namespace Tests\Unit\Services;
 
-use Tests\TestCase;
-use App\Services\FileUploadService;
-use App\Models\DocumentRequest;
 use App\Models\DocumentFile;
+use App\Models\DocumentRequest;
+use App\Services\FileUploadService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
 
 class FileUploadServiceTest extends TestCase
 {
@@ -30,7 +30,7 @@ class FileUploadServiceTest extends TestCase
             'birth_certificate',
             'valid_id',
             'transcript_of_records',
-            'other'
+            'other',
         ];
 
         $this->assertEquals($expectedTypes, $allowedTypes);
@@ -56,7 +56,7 @@ class FileUploadServiceTest extends TestCase
     public function test_validate_file_returns_empty_array_for_valid_file()
     {
         $file = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
-        $service = new FileUploadService();
+        $service = new FileUploadService;
 
         $errors = $service->validateFile($file, 'transcript_of_records');
 
@@ -66,7 +66,7 @@ class FileUploadServiceTest extends TestCase
     public function test_validate_file_returns_error_for_invalid_file_type()
     {
         $file = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
-        $service = new FileUploadService();
+        $service = new FileUploadService;
 
         $errors = $service->validateFile($file, 'invalid_type');
 
@@ -77,7 +77,7 @@ class FileUploadServiceTest extends TestCase
     public function test_validate_file_returns_error_for_file_too_large()
     {
         $file = UploadedFile::fake()->create('document.pdf', 20 * 1024 * 1024, 'application/pdf'); // 20MB
-        $service = new FileUploadService();
+        $service = new FileUploadService;
 
         $errors = $service->validateFile($file, 'transcript_of_records');
 
@@ -88,7 +88,7 @@ class FileUploadServiceTest extends TestCase
     public function test_validate_file_returns_error_for_invalid_mime_type()
     {
         $file = UploadedFile::fake()->create('document.txt', 1024, 'text/plain');
-        $service = new FileUploadService();
+        $service = new FileUploadService;
 
         $errors = $service->validateFile($file, 'transcript_of_records');
 
@@ -100,7 +100,7 @@ class FileUploadServiceTest extends TestCase
     {
         $file = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
         $documentRequest = DocumentRequest::factory()->create();
-        $service = new FileUploadService();
+        $service = new FileUploadService;
 
         $documentFile = $service->uploadFile($file, $documentRequest, 'transcript_of_records');
 
@@ -116,7 +116,7 @@ class FileUploadServiceTest extends TestCase
     {
         $file = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
         $documentRequest = DocumentRequest::factory()->create();
-        $service = new FileUploadService();
+        $service = new FileUploadService;
 
         $documentFile = $service->uploadFile($file, $documentRequest, 'transcript_of_records');
 
@@ -127,7 +127,7 @@ class FileUploadServiceTest extends TestCase
     {
         $file = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
         $documentRequest = DocumentRequest::factory()->create();
-        $service = new FileUploadService();
+        $service = new FileUploadService;
 
         $documentFile = $service->uploadFile($file, $documentRequest, 'transcript_of_records');
 
@@ -140,7 +140,7 @@ class FileUploadServiceTest extends TestCase
     {
         $file = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
         $documentRequest = DocumentRequest::factory()->create();
-        $service = new FileUploadService();
+        $service = new FileUploadService;
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Invalid file type: invalid_type');
@@ -152,7 +152,7 @@ class FileUploadServiceTest extends TestCase
     {
         $file = UploadedFile::fake()->create('document.pdf', 20 * 1024 * 1024, 'application/pdf');
         $documentRequest = DocumentRequest::factory()->create();
-        $service = new FileUploadService();
+        $service = new FileUploadService;
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('File size exceeds');
@@ -164,7 +164,7 @@ class FileUploadServiceTest extends TestCase
     {
         $file = UploadedFile::fake()->create('document.txt', 1024, 'text/plain');
         $documentRequest = DocumentRequest::factory()->create();
-        $service = new FileUploadService();
+        $service = new FileUploadService;
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('File type not allowed');
@@ -179,7 +179,7 @@ class FileUploadServiceTest extends TestCase
             UploadedFile::fake()->create('document2.pdf', 1024, 'application/pdf'),
         ];
         $documentRequest = DocumentRequest::factory()->create();
-        $service = new FileUploadService();
+        $service = new FileUploadService;
 
         $documentFiles = $service->uploadMultipleFiles($files, $documentRequest, 'transcript_of_records');
 
@@ -192,14 +192,14 @@ class FileUploadServiceTest extends TestCase
     public function test_delete_file_deletes_from_s3_and_database()
     {
         $documentFile = DocumentFile::factory()->create([
-            'file_name' => 'test/file.pdf'
+            'file_name' => 'test/file.pdf',
         ]);
 
         // Create file in fake storage
         Storage::disk('s3')->put('test/file.pdf', 'test content');
         $this->assertTrue(Storage::disk('s3')->exists('test/file.pdf'));
 
-        $service = new FileUploadService();
+        $service = new FileUploadService;
         $result = $service->deleteFile($documentFile);
 
         $this->assertTrue($result);
@@ -210,12 +210,12 @@ class FileUploadServiceTest extends TestCase
     public function test_update_file_deletes_old_and_uploads_new()
     {
         $oldFile = DocumentFile::factory()->create([
-            'file_name' => 'old/file.pdf'
+            'file_name' => 'old/file.pdf',
         ]);
         Storage::disk('s3')->put('old/file.pdf', 'old content');
 
         $newFile = UploadedFile::fake()->create('new_document.pdf', 1024, 'application/pdf');
-        $service = new FileUploadService();
+        $service = new FileUploadService;
 
         $updatedFile = $service->updateFile($newFile, $oldFile);
 

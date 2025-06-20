@@ -17,7 +17,9 @@ class S3FileUploadTest extends TestCase
     use RefreshDatabase;
 
     protected ApiKey $apiKey;
+
     protected User $user;
+
     protected DocumentRequest $documentRequest;
 
     protected function setUp(): void
@@ -80,7 +82,7 @@ class S3FileUploadTest extends TestCase
                     'file_size',
                     'formatted_size',
                     'uploaded_at',
-                ]
+                ],
             ]);
 
         $this->assertDatabaseHas('document_files', [
@@ -113,7 +115,7 @@ class S3FileUploadTest extends TestCase
                     'uploaded_files',
                     'total_uploaded',
                     'total_files',
-                ]
+                ],
             ]);
 
         $this->assertDatabaseCount('document_files', 2);
@@ -139,7 +141,7 @@ class S3FileUploadTest extends TestCase
                     'files',
                     'total_files',
                     'file_types',
-                ]
+                ],
             ]);
 
         $this->assertEquals(3, $response->json('data.total_files'));
@@ -169,7 +171,7 @@ class S3FileUploadTest extends TestCase
                     'files',
                     'total_files',
                     'file_type',
-                ]
+                ],
             ]);
 
         $this->assertEquals(2, $response->json('data.total_files'));
@@ -217,7 +219,7 @@ class S3FileUploadTest extends TestCase
                     'file_type',
                     'original_name',
                     'metadata',
-                ]
+                ],
             ]);
 
         $this->assertDatabaseHas('document_files', [
@@ -252,7 +254,7 @@ class S3FileUploadTest extends TestCase
                     'formatted_size',
                     'uploaded_at',
                     'metadata',
-                ]
+                ],
             ]);
     }
 
@@ -260,7 +262,7 @@ class S3FileUploadTest extends TestCase
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get("/api/v1/file-types");
+        ])->get('/api/v1/file-types');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -270,7 +272,7 @@ class S3FileUploadTest extends TestCase
                     'allowed_types',
                     'max_file_size',
                     'allowed_extensions',
-                ]
+                ],
             ]);
     }
 
@@ -308,7 +310,7 @@ class S3FileUploadTest extends TestCase
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
             'Content-Type' => 'multipart/form-data',
-        ])->post("/api/v1/document-requests/99999/files/upload", [
+        ])->post('/api/v1/document-requests/99999/files/upload', [
             'file' => $file,
             'file_type' => 'transcript_of_records',
         ]);
@@ -329,7 +331,7 @@ class S3FileUploadTest extends TestCase
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get("/api/v1/document-requests/99999/files");
+        ])->get('/api/v1/document-requests/99999/files');
 
         $response->assertStatus(404);
     }
@@ -403,7 +405,7 @@ class S3FileUploadTest extends TestCase
                     'total_uploaded',
                     'total_files',
                     'errors',
-                ]
+                ],
             ]);
 
         $this->assertEquals(1, $response->json('data.total_uploaded'));

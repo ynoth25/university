@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Models;
 
-use Tests\TestCase;
-use App\Models\DocumentRequest;
 use App\Models\DocumentFile;
+use App\Models\DocumentRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class DocumentRequestTest extends TestCase
 {
@@ -93,7 +93,7 @@ class DocumentRequestTest extends TestCase
     public function test_person_requesting_name_is_fillable()
     {
         $documentRequest = DocumentRequest::factory()->create([
-            'person_requesting_name' => 'John Doe'
+            'person_requesting_name' => 'John Doe',
         ]);
 
         $this->assertEquals('John Doe', $documentRequest->getAttributes()['person_requesting_name']);
@@ -102,7 +102,7 @@ class DocumentRequestTest extends TestCase
     public function test_request_for_is_fillable()
     {
         $documentRequest = DocumentRequest::factory()->create([
-            'request_for' => 'SF10'
+            'request_for' => 'SF10',
         ]);
 
         $this->assertEquals('SF10', $documentRequest->request_for);
@@ -111,7 +111,7 @@ class DocumentRequestTest extends TestCase
     public function test_signature_url_is_fillable()
     {
         $documentRequest = DocumentRequest::factory()->create([
-            'signature_url' => 'https://example.com/signature.jpg'
+            'signature_url' => 'https://example.com/signature.jpg',
         ]);
 
         $this->assertEquals('https://example.com/signature.jpg', $documentRequest->getAttributes()['signature_url']);
@@ -137,7 +137,7 @@ class DocumentRequestTest extends TestCase
         $documentRequest = DocumentRequest::factory()->create();
         $signatureFile = DocumentFile::factory()->create([
             'document_request_id' => $documentRequest->id,
-            'file_type' => 'signature'
+            'file_type' => 'signature',
         ]);
 
         $foundSignature = $documentRequest->signatureFile();
@@ -150,15 +150,15 @@ class DocumentRequestTest extends TestCase
         $documentRequest = DocumentRequest::factory()->create();
         DocumentFile::factory()->create([
             'document_request_id' => $documentRequest->id,
-            'file_type' => 'signature'
+            'file_type' => 'signature',
         ]);
         DocumentFile::factory()->create([
             'document_request_id' => $documentRequest->id,
-            'file_type' => 'transcript_of_records'
+            'file_type' => 'transcript_of_records',
         ]);
         DocumentFile::factory()->create([
             'document_request_id' => $documentRequest->id,
-            'file_type' => 'birth_certificate'
+            'file_type' => 'birth_certificate',
         ]);
 
         $supportingDocs = $documentRequest->supportingDocuments();
@@ -172,7 +172,7 @@ class DocumentRequestTest extends TestCase
         $documentRequest = DocumentRequest::factory()->create();
         $transcriptFile = DocumentFile::factory()->create([
             'document_request_id' => $documentRequest->id,
-            'file_type' => 'transcript_of_records'
+            'file_type' => 'transcript_of_records',
         ]);
 
         $foundFile = $documentRequest->getDocumentByType('transcript_of_records');
@@ -183,7 +183,7 @@ class DocumentRequestTest extends TestCase
     public function test_person_requesting_name_attribute()
     {
         $documentRequest = DocumentRequest::factory()->create([
-            'person_requesting_name' => 'John Doe'
+            'person_requesting_name' => 'John Doe',
         ]);
 
         $this->assertEquals('John Doe', $documentRequest->getAttributes()['person_requesting_name']);
@@ -192,7 +192,7 @@ class DocumentRequestTest extends TestCase
     public function test_request_type_attribute()
     {
         $documentRequest = DocumentRequest::factory()->create([
-            'request_for' => 'SF10'
+            'request_for' => 'SF10',
         ]);
 
         $this->assertEquals('SF10', $documentRequest->request_type);
@@ -204,7 +204,7 @@ class DocumentRequestTest extends TestCase
         $signatureFile = DocumentFile::factory()->create([
             'document_request_id' => $documentRequest->id,
             'file_type' => 'signature',
-            'file_path' => 'https://example.com/signature.pdf'
+            'file_path' => 'https://example.com/signature.pdf',
         ]);
 
         $this->assertEquals('https://example.com/signature.pdf', $documentRequest->signature_url);
@@ -213,7 +213,7 @@ class DocumentRequestTest extends TestCase
     public function test_signature_url_attribute_returns_empty_when_no_signature()
     {
         $documentRequest = DocumentRequest::factory()->create([
-            'signature_url' => null
+            'signature_url' => null,
         ]);
 
         $this->assertEquals('', $documentRequest->signature_url);
@@ -222,7 +222,7 @@ class DocumentRequestTest extends TestCase
     public function test_signature_url_attribute_returns_direct_url_when_no_file()
     {
         $documentRequest = DocumentRequest::factory()->create([
-            'signature_url' => 'https://example.com/direct-signature.jpg'
+            'signature_url' => 'https://example.com/direct-signature.jpg',
         ]);
 
         $this->assertEquals('https://example.com/direct-signature.jpg', $documentRequest->getAttributes()['signature_url']);
@@ -254,7 +254,7 @@ class DocumentRequestTest extends TestCase
             'request_for' => 'SF10',
             'signature_url' => 'https://example.com/signature.jpg',
             'status' => 'pending',
-            'remarks' => 'Test remarks'
+            'remarks' => 'Test remarks',
         ];
 
         $documentRequest = DocumentRequest::create($data);
@@ -270,18 +270,18 @@ class DocumentRequestTest extends TestCase
     {
         $documentRequest = DocumentRequest::factory()->create([
             'person_requesting_name' => 'John Doe',
-            'signature_url' => 'https://example.com/signature.jpg'
+            'signature_url' => 'https://example.com/signature.jpg',
         ]);
 
         // Debug output
         $this->assertNotNull($documentRequest->id);
         $this->assertNotNull($documentRequest->request_id);
-        
+
         // Check raw attributes
         $rawAttributes = $documentRequest->getAttributes();
         $this->assertArrayHasKey('person_requesting_name', $rawAttributes);
         $this->assertArrayHasKey('signature_url', $rawAttributes);
-        
+
         // Check if values are set
         $this->assertEquals('John Doe', $rawAttributes['person_requesting_name']);
         $this->assertEquals('https://example.com/signature.jpg', $rawAttributes['signature_url']);
