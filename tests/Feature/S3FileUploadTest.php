@@ -65,7 +65,7 @@ class S3FileUploadTest extends TestCase
             'Content-Type' => 'multipart/form-data',
         ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload", [
             'file' => $file,
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
 
         $response->assertStatus(201)
@@ -87,7 +87,7 @@ class S3FileUploadTest extends TestCase
 
         $this->assertDatabaseHas('document_files', [
             'document_request_id' => $this->documentRequest->id,
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
             'original_name' => 'document.pdf',
         ]);
     }
@@ -104,7 +104,7 @@ class S3FileUploadTest extends TestCase
             'Content-Type' => 'multipart/form-data',
         ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload-multiple", [
             'files' => $files,
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
 
         $response->assertStatus(201)
@@ -126,7 +126,7 @@ class S3FileUploadTest extends TestCase
         // Create some test files
         DocumentFile::factory()->count(3)->create([
             'document_request_id' => $this->documentRequest->id,
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
 
         $response = $this->withHeaders([
@@ -152,7 +152,7 @@ class S3FileUploadTest extends TestCase
         // Create files of different types
         DocumentFile::factory()->count(2)->create([
             'document_request_id' => $this->documentRequest->id,
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
         DocumentFile::factory()->count(1)->create([
             'document_request_id' => $this->documentRequest->id,
@@ -161,7 +161,7 @@ class S3FileUploadTest extends TestCase
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get("/api/v1/document-requests/{$this->documentRequest->id}/files/type/document");
+        ])->get("/api/v1/document-requests/{$this->documentRequest->id}/files/type/transcript_of_records");
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -175,25 +175,21 @@ class S3FileUploadTest extends TestCase
             ]);
 
         $this->assertEquals(2, $response->json('data.total_files'));
-        $this->assertEquals('document', $response->json('data.file_type'));
+        $this->assertEquals('transcript_of_records', $response->json('data.file_type'));
     }
 
     public function test_delete_file_success()
     {
         $file = DocumentFile::factory()->create([
             'document_request_id' => $this->documentRequest->id,
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
         ])->delete("/api/v1/document-requests/{$this->documentRequest->id}/files/{$file->id}");
 
-        $response->assertStatus(200)
-            ->assertJson([
-                'success' => true,
-                'message' => 'File deleted successfully',
-            ]);
+        $response->assertStatus(204);
 
         $this->assertDatabaseMissing('document_files', ['id' => $file->id]);
     }
@@ -202,12 +198,12 @@ class S3FileUploadTest extends TestCase
     {
         $file = DocumentFile::factory()->create([
             'document_request_id' => $this->documentRequest->id,
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
 
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->put("/api/v1/document-requests/{$this->documentRequest->id}/files/{$file->id}", [
+        ])->patch("/api/v1/document-requests/{$this->documentRequest->id}/files/{$file->id}/metadata", [
             'metadata' => [
                 'description' => 'Updated description',
                 'tags' => ['important', 'urgent'],
@@ -236,7 +232,7 @@ class S3FileUploadTest extends TestCase
     {
         $file = DocumentFile::factory()->create([
             'document_request_id' => $this->documentRequest->id,
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
 
         $response = $this->withHeaders([
@@ -301,7 +297,7 @@ class S3FileUploadTest extends TestCase
             'X-API-Key' => $this->apiKey->key,
             'Content-Type' => 'multipart/form-data',
         ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload", [
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
 
         $response->assertStatus(422);
@@ -316,7 +312,7 @@ class S3FileUploadTest extends TestCase
             'Content-Type' => 'multipart/form-data',
         ])->post("/api/v1/document-requests/99999/files/upload", [
             'file' => $file,
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
 
         $response->assertStatus(404);
@@ -346,7 +342,7 @@ class S3FileUploadTest extends TestCase
 
         $response = $this->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload", [
             'file' => $file,
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
 
         $response->assertStatus(401);
@@ -361,7 +357,7 @@ class S3FileUploadTest extends TestCase
             'Content-Type' => 'multipart/form-data',
         ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload", [
             'file' => $file,
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
 
         $response->assertStatus(401);
@@ -380,7 +376,7 @@ class S3FileUploadTest extends TestCase
             'Content-Type' => 'multipart/form-data',
         ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload", [
             'file' => $file,
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
 
         $response->assertStatus(401);
@@ -397,7 +393,7 @@ class S3FileUploadTest extends TestCase
             'Content-Type' => 'multipart/form-data',
         ])->post("/api/v1/document-requests/{$this->documentRequest->id}/files/upload-multiple", [
             'files' => [$validFile, $invalidFile],
-            'file_type' => 'document',
+            'file_type' => 'transcript_of_records',
         ]);
 
         $response->assertStatus(200)
@@ -424,14 +420,14 @@ class S3FileUploadTest extends TestCase
         $fileUploadService = app(FileUploadService::class);
         
         // Test file validation
-        $validationErrors = $fileUploadService->validateFile($file, 'document');
+        $validationErrors = $fileUploadService->validateFile($file, 'transcript_of_records');
         $this->assertEmpty($validationErrors);
         
         // Test file upload
-        $documentFile = $fileUploadService->uploadFile($file, $this->documentRequest, 'document');
+        $documentFile = $fileUploadService->uploadFile($file, $this->documentRequest, 'transcript_of_records');
         
         $this->assertInstanceOf(DocumentFile::class, $documentFile);
-        $this->assertEquals('document', $documentFile->file_type);
+        $this->assertEquals('transcript_of_records', $documentFile->file_type);
         $this->assertEquals('document.pdf', $documentFile->original_name);
     }
 
@@ -442,7 +438,7 @@ class S3FileUploadTest extends TestCase
         $fileUploadService = app(FileUploadService::class);
         
         // Test file validation with invalid file type
-        $validationErrors = $fileUploadService->validateFile($file, 'document');
+        $validationErrors = $fileUploadService->validateFile($file, 'transcript_of_records');
         $this->assertNotEmpty($validationErrors);
     }
 }

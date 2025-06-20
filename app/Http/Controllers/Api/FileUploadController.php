@@ -241,14 +241,60 @@ class FileUploadController extends BaseController
                 return $this->sendError('File not found', [], 404);
             }
 
-            // Delete file
-            if ($this->fileUploadService->deleteFile($documentFile)) {
-                return $this->sendDeleted('File deleted successfully');
+            // Delete file from S3 (if it exists)
+            if ($documentFile->exists()) {
+                $documentFile->deleteFile();
             }
 
-            return $this->sendError('Failed to delete file', [], 500);
+            // Delete from database
+            $documentFile->delete();
+
+            return $this->sendDeleted('File deleted successfully');
         } catch (\Exception $e) {
             return $this->sendError('Error deleting file: ' . $e->getMessage(), [], 500);
+        }
+    }
+
+    /**
+     * Update file metadata
+     */
+    public function updateFileMetadata(Request $request, string $documentRequestId, string $fileId): JsonResponse
+    {
+        try {
+            // Find the document request
+            $documentRequest = DocumentRequest::find((int) $documentRequestId);
+            if (!$documentRequest) {
+                return $this->sendError('Document request not found', [], 404);
+            }
+
+            // Find the file
+            $documentFile = $documentRequest->files()->find($fileId);
+            if (!$documentFile) {
+                return $this->sendError('File not found', [], 404);
+            }
+
+            // Validate request
+            $validator = Validator::make($request->all(), [
+                'metadata' => 'required|array',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Validation failed', $validator->errors(), 422);
+            }
+
+            // Update metadata
+            $documentFile->update([
+                'metadata' => array_merge($documentFile->metadata ?? [], $request->input('metadata'))
+            ]);
+
+            return $this->sendUpdated([
+                'id' => $documentFile->id,
+                'file_type' => $documentFile->file_type,
+                'original_name' => $documentFile->original_name,
+                'metadata' => $documentFile->metadata,
+            ], 'File metadata updated successfully');
+        } catch (\Exception $e) {
+            return $this->sendError('Error updating file metadata: ' . $e->getMessage(), [], 500);
         }
     }
 
@@ -349,25 +395,52 @@ class FileUploadController extends BaseController
     public function getAllowedFileTypes(): JsonResponse
     {
         try {
-            $fileTypes = [];
-            foreach (FileUploadService::getAllowedFileTypes() as $fileType) {
+            $allowedTypes = FileUploadService::getAllowedFileTypes();
+            $maxFileSize = 0;
+            $allowedExtensions = [];
+
+            foreach ($allowedTypes as $fileType) {
                 $config = FileUploadService::getFileTypeConfig($fileType);
-                $fileTypes[] = [
-                    'type' => $fileType,
-                    'max_size' => $config['max_size'],
-                    'max_size_formatted' => $this->formatBytes($config['max_size']),
-                    'allowed_mimes' => $config['allowed_mimes'],
-                    'folder' => $config['folder'],
-                ];
+                $maxFileSize = max($maxFileSize, $config['max_size']);
+                
+                // Extract extensions from MIME types
+                foreach ($config['allowed_mimes'] as $mimeType) {
+                    $extension = $this->getExtensionFromMimeType($mimeType);
+                    if ($extension) {
+                        $allowedExtensions[] = $extension;
+                    }
+                }
             }
 
+            // Remove duplicates
+            $allowedExtensions = array_unique($allowedExtensions);
+
             return $this->sendResponse([
-                'file_types' => $fileTypes,
-                'total_types' => count($fileTypes),
+                'allowed_types' => $allowedTypes,
+                'max_file_size' => $maxFileSize,
+                'max_file_size_formatted' => $this->formatBytes($maxFileSize),
+                'allowed_extensions' => $allowedExtensions,
             ], 'Allowed file types retrieved successfully');
         } catch (\Exception $e) {
             return $this->sendError('Error retrieving file types: ' . $e->getMessage(), [], 500);
         }
+    }
+
+    /**
+     * Get file extension from MIME type
+     */
+    private function getExtensionFromMimeType(string $mimeType): ?string
+    {
+        $mimeToExtension = [
+            'application/pdf' => 'pdf',
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'application/msword' => 'doc',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
+        ];
+
+        return $mimeToExtension[$mimeType] ?? null;
     }
 
     /**

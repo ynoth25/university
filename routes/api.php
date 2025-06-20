@@ -54,6 +54,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/type/{fileType}', [FileUploadController::class, 'getFilesByType']);
             Route::get('/{fileId}', [FileUploadController::class, 'getFileInfo']);
             Route::put('/{fileId}', [FileUploadController::class, 'updateFile']);
+            Route::patch('/{fileId}/metadata', [FileUploadController::class, 'updateFileMetadata']);
             Route::delete('/{fileId}', [FileUploadController::class, 'deleteFile']);
         });
 
