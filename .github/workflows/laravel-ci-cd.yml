@@ -168,11 +168,8 @@ jobs:
     - name: Install PHP dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     
-    - name: Install Enlightn
-      run: composer require --dev enlightn/enlightn
-    
-    - name: Run Enlightn security scan
-      run: php artisan enlightn --report
+    - name: Run Composer Security Audit
+      run: composer audit --format=json --no-interaction
 
   build:
     name: Build Application
