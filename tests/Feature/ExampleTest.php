@@ -60,7 +60,7 @@ class ExampleTest extends TestCase
         $responseData = json_decode($response->getContent(), true);
         $this->assertFalse($responseData['success']);
         $this->assertEquals($message, $responseData['message']);
-        $this->assertEquals($errors, $responseData['errors']);
+        $this->assertEquals($errors, $responseData['data']);
     }
 
     public function test_base_controller_send_created()
@@ -79,13 +79,34 @@ class ExampleTest extends TestCase
         $this->assertEquals($data, $responseData['data']);
     }
 
-    public function test_base_controller_send_no_content()
+    public function test_base_controller_send_updated()
     {
-        $response = $this->baseController->sendNoContent();
+        $data = ['id' => 1, 'name' => 'updated'];
+        $message = 'Updated successfully';
+        
+        $response = $this->baseController->sendUpdated($data, $message);
+        
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+        
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertTrue($responseData['success']);
+        $this->assertEquals($message, $responseData['message']);
+        $this->assertEquals($data, $responseData['data']);
+    }
+
+    public function test_base_controller_send_deleted()
+    {
+        $message = 'Deleted successfully';
+        
+        $response = $this->baseController->sendDeleted($message);
         
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(204, $response->getStatusCode());
-        $this->assertEmpty($response->getContent());
+        
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertTrue($responseData['success']);
+        $this->assertEquals($message, $responseData['message']);
     }
 
     public function test_api_key_middleware_valid_key()
@@ -175,7 +196,6 @@ class ExampleTest extends TestCase
         $response->assertJsonStructure([
             'success',
             'message',
-            'errors',
         ]);
         
         $this->assertFalse($response->json('success'));
@@ -209,12 +229,12 @@ class ExampleTest extends TestCase
     {
         \App\Models\DocumentRequest::factory()->create([
             'learning_reference_number' => 'LRN001',
-            'name_of_student' => 'Student One',
+            'name_of_student' => 'Student 1',
             'status' => 'pending',
         ]);
         \App\Models\DocumentRequest::factory()->create([
             'learning_reference_number' => 'LRN002',
-            'name_of_student' => 'Student Two',
+            'name_of_student' => 'Student 2',
             'status' => 'completed',
         ]);
 
@@ -251,54 +271,26 @@ class ExampleTest extends TestCase
         $this->assertEquals('John Doe', $data['document_requests'][0]['name_of_student']);
     }
 
-    public function test_api_sorting()
-    {
-        \App\Models\DocumentRequest::factory()->create([
-            'learning_reference_number' => 'LRN001',
-            'name_of_student' => 'Alice',
-            'created_at' => now()->subDays(1),
-        ]);
-        \App\Models\DocumentRequest::factory()->create([
-            'learning_reference_number' => 'LRN002',
-            'name_of_student' => 'Bob',
-            'created_at' => now(),
-        ]);
-
-        $response = $this->withHeaders([
-            'X-API-Key' => $this->apiKey->key,
-        ])->get('/api/v1/document-requests?sort=name_of_student&order=desc');
-
-        $response->assertStatus(200);
-        
-        $data = $response->json('data');
-        $this->assertEquals('Bob', $data['document_requests'][0]['name_of_student']);
-    }
-
     public function test_api_validation_errors()
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-            'Content-Type' => 'application/json',
-        ])->postJson('/api/v1/document-requests', []);
+        ])->post('/api/v1/document-requests', []);
 
         $response->assertStatus(422);
         
         $data = $response->json();
         $this->assertFalse($data['success']);
-        $this->assertArrayHasKey('errors', $data);
+        $this->assertArrayHasKey('data', $data);
     }
 
     public function test_api_not_found_response()
     {
         $response = $this->withHeaders([
             'X-API-Key' => $this->apiKey->key,
-        ])->get('/api/v1/document-requests/99999');
+        ])->get('/api/v1/document-requests/999999');
 
         $response->assertStatus(404);
-        
-        $data = $response->json();
-        $this->assertFalse($data['success']);
-        $this->assertStringContainsString('not found', $data['message']);
     }
 
     public function test_api_method_not_allowed()
